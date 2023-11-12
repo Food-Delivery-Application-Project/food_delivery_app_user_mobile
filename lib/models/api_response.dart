@@ -1,25 +1,19 @@
 class ApiResponse<T> {
-  final String apiVersion;
-  final String organizationName;
   final String message;
-  final int responseCode;
+  final int status;
   final T data;
 
   ApiResponse({
-    required this.apiVersion,
-    required this.organizationName,
     required this.message,
-    required this.responseCode,
+    required this.status,
     required this.data,
   });
 
   factory ApiResponse.fromJson(
       Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
     return ApiResponse(
-      apiVersion: json['apiVersion'] as String,
-      organizationName: json['organizationName'] as String,
       message: json['message'] as String,
-      responseCode: json['responseCode'] as int,
+      status: json['status'] as int,
       data: fromJsonT(json['data']),
     );
   }

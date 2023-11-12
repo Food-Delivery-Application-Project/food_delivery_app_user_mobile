@@ -66,7 +66,7 @@ class AuthInitialState extends AuthState {}
 class AuthLoadingState extends AuthState {}
 
 class AuthRegistrationSuccessState extends AuthState {
-  final AuthModel response;
+  final ApiResponse<SignUpModel> response;
   AuthRegistrationSuccessState({required this.response});
 }
 

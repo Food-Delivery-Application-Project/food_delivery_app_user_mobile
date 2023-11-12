@@ -1,9 +1,11 @@
 import 'dart:convert';
 
-import 'package:food_delivery_app/utils/api_manager.dart';
 import 'package:food_delivery_app/constants/app_url.dart';
+import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/auth/auth_model.dart';
+import 'package:food_delivery_app/models/auth/signup_model.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
+import 'package:food_delivery_app/utils/api_manager.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
 
 abstract class AuthController {
@@ -17,7 +19,8 @@ abstract class AuthController {
     }
   }
 
-  static Future<AuthModel> register(String email, String password) async {
+  static Future<ApiResponse<SignUpModel>> register(
+      String email, String password) async {
     const url = AuthUrl.register;
     try {
       final response = await ApiManager.postRequest({
@@ -25,7 +28,19 @@ abstract class AuthController {
         'password': password,
       }, url);
 
-      return _getResponse(response);
+      print(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+
+        ApiResponse<SignUpModel> model = ApiResponse.fromJson(
+          body,
+          (data) => SignUpModel.fromJson(data),
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
     } catch (_) {
       rethrow;
     }

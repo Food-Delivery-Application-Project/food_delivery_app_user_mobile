@@ -38,10 +38,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   FocusNode rePasswordFocusNode = FocusNode();
 
   initBloc() {
-    context.read<AuthBloc>().add(AuthEventRegister(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        ));
+    authBloc = authBloc
+      ..add(AuthEventRegister(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      ));
   }
 
   pageNavigation() {
@@ -142,12 +143,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             caption: "Register",
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
-                                // initBloc();
-                                AppNavigator.goToPage(
-                                  context: context,
-                                  screen:
-                                      const RegistrationOtpScreen(email: ""),
-                                );
+                                initBloc();
                               }
                             }),
                         20.height,

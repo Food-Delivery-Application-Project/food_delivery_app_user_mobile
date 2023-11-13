@@ -82,8 +82,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           } else if (state is AuthRegistrationSuccessState) {
             AppDialogs.closeDialog(context);
             pageNavigation();
-
-            AppToast.normal(state.response.message);
+            AppToast.success(state.response.message);
           } else if (state is AuthStateFailure) {
             AppDialogs.closeDialog(context);
             AppToast.danger(state.message);

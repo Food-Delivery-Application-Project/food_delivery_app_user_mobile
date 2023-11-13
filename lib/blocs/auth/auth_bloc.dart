@@ -34,23 +34,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // Send Verification Message Event
-    on<AuthEventSendVerificationEmail>((event, emit) async {
-      emit(AuthLoadingState());
-      try {
-        bool networkStatus = await isNetworkAvailable();
-        if (networkStatus == true) {
-          final response =
-              await AuthController.sendVerificaionMail(event.email);
-          emit(AuthSendVerificationState(response: response));
-        } else {
-          throw Exception("No Internet Connection");
-        }
-      } catch (e) {
-        emit(AuthStateFailure(message: e.toString()));
-      }
-    });
-
     on<AuthEventVerifyOtp>((event, emit) async {
       emit(AuthLoadingState());
       try {
@@ -67,6 +50,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    // Handle resend otp event
+    on<AuthEventResendOtp>((event, emit) async {
+      emit(AuthLoadingState());
+      try {
+        bool networkStatus = await isNetworkAvailable();
+        if (networkStatus == true) {
+          final response =
+              await AuthController.resendVerificationMail(event.email);
+          emit(AuthResentOtpState(response: response));
+        } else {
+          throw Exception("No Internet Connection");
+        }
+      } catch (e) {
+        emit(AuthStateFailure(message: e.toString()));
+      }
+    });
     // Handle email verification
     on<AuthEventVerifyEmail>((event, emit) async {
       emit(AuthLoadingState());

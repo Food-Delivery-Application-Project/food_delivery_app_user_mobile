@@ -8,9 +8,8 @@ abstract class AuthUrl {
   static const String register = "${AppUrl.baseUrl}/signUp";
   static const String emailVerification =
       "${AppUrl.baseUrl}/api/auth/verify-account";
+  static const String resendVerificationMail = "${AppUrl.baseUrl}/resend-otp";
   static const String login = "${AppUrl.baseUrl}/api/auth/login";
-  static const String sendVerificationEmail =
-      "${AppUrl.baseUrl}/api/auth/send-otp";
   static const String verifyEmail = "${AppUrl.baseUrl}/api/auth/verify-account";
   static const String completeProfile =
       "${AppUrl.baseUrl}/api/user/finish-setup";
@@ -18,7 +17,7 @@ abstract class AuthUrl {
       "${AppUrl.baseUrl}/api/auth/send-otp";
   static const String changePassword =
       "${AppUrl.baseUrl}/api/auth/reset-password";
-  static const String verifyOtp = "${AppUrl.baseUrl}/api/auth/verify-otp";
+  static const String verifyOtp = "${AppUrl.baseUrl}/emailVrifyOtp";
 }
 
 abstract class MediaUrl {

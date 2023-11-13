@@ -28,7 +28,6 @@ abstract class AuthController {
         'password': password,
       }, url);
 
-      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         var body = jsonDecode(response.body);
 
@@ -42,30 +41,58 @@ abstract class AuthController {
         throw Exception(data["message"]);
       }
     } catch (_) {
-      rethrow;
+      throw Exception("Something went wrong");
     }
   }
 
-  static Future<AuthModel> sendVerificaionMail(String email) async {
-    final url = "${AuthUrl.sendVerificationEmail}/$email";
+  static Future<ApiResponse<dynamic>> resendVerificationMail(
+      String email) async {
+    const url = AuthUrl.resendVerificationMail;
 
     try {
-      final response = await ApiManager.bodyLessPost(url, headers: {
-        "Intent": "Verify-Email",
-      });
+      final response = await ApiManager.postRequest(
+        {"email": email},
+        url,
+      );
 
-      return _getResponse(response);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+
+        ApiResponse<dynamic> model = ApiResponse.fromJson(
+          body,
+          (data) => null,
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
     } catch (_) {
       rethrow;
     }
   }
 
-  static Future<AuthModel> verifyOtp(String email, String otp) async {
-    final url = "${AuthUrl.verifyOtp}/$email/$otp";
+  static Future<ApiResponse<dynamic>> verifyOtp(
+      String email, String otp) async {
+    const url = AuthUrl.verifyOtp;
 
     try {
-      final response = await ApiManager.bodyLessPut(url);
-      return _getResponse(response);
+      final response = await ApiManager.postRequest(
+        {"email": email, "code": otp},
+        url,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+
+        ApiResponse<dynamic> model = ApiResponse.fromJson(
+          body,
+          (data) => null,
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
     } catch (_) {
       rethrow;
     }

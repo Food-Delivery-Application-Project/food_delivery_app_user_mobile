@@ -16,17 +16,17 @@ class AuthEventRegister extends AuthEvent {
   AuthEventRegister({required this.email, required this.password});
 }
 
-class AuthEventSendVerificationEmail extends AuthEvent {
-  final String email;
-
-  AuthEventSendVerificationEmail({required this.email});
-}
-
 class AuthEventVerifyOtp extends AuthEvent {
   final String email;
   final String otp;
 
   AuthEventVerifyOtp({required this.email, required this.otp});
+}
+
+class AuthEventResendOtp extends AuthEvent {
+  final String email;
+
+  AuthEventResendOtp({required this.email});
 }
 
 class AuthEventVerifyEmail extends AuthEvent {
@@ -96,8 +96,13 @@ class AuthSendVerificationForPasswordResetState extends AuthState {
 }
 
 class AuthVerifyOtpState extends AuthState {
-  final AuthModel response;
+  final ApiResponse<dynamic> response;
   AuthVerifyOtpState({required this.response});
+}
+
+class AuthResentOtpState extends AuthState {
+  final ApiResponse<dynamic> response;
+  AuthResentOtpState({required this.response});
 }
 
 class AuthChangePasswordAfterOtpVerificationState extends AuthState {

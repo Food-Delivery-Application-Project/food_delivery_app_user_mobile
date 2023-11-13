@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/blocs/auth/auth_bloc.dart';
 import 'package:food_delivery_app/blocs/timer_cubit/timer_cubit_cubit.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
-import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
@@ -40,18 +39,12 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
     otpTimerCubit.startOtpIntervals();
   }
 
-  initBlocs() {
-    authBloc = authBloc
-      ..add(AuthEventSendVerificationEmail(email: widget.email));
-  }
-
   @override
   void initState() {
     super.initState();
     Future.wait([UserSecureStorage.setIsRegistering('true')]);
     Future.delayed(Duration(seconds: 2), () {
       initCubits();
-      // initBlocs();
     });
   }
 
@@ -61,6 +54,10 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
         email: widget.email,
         otp: pinController.text.trim(),
       ));
+  }
+
+  resendOtp() {
+    authBloc = authBloc..add(AuthEventResendOtp(email: widget.email));
   }
 
   @override
@@ -74,14 +71,13 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
       appBar: BackAppbarWidget(),
       body: BlocConsumer<AuthBloc, AuthState>(
         bloc: authBloc,
         listener: (context, state) {
           if (state is AuthLoadingState) {
             AppDialogs.loadingDialog(context);
-          } else if (state is AuthSendVerificationState) {
+          } else if (state is AuthResentOtpState) {
             AppDialogs.closeDialog(context);
             toast(state.response.message);
           } else if (state is AuthVerificationState) {
@@ -172,7 +168,7 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     otpTimerCubit.startOtpIntervals();
-                                    // initBlocs();
+                                    resendOtp();
                                   },
                                   child: Container(
                                     padding: EdgeInsets.only(
@@ -200,13 +196,7 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
                     ),
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        // verifyOtp();
-                        AppDialogs.otpSuccessDialog(context, onPressed: () {
-                          AppNavigator.goToPage(
-                            context: context,
-                            screen: LoginScreen(),
-                          );
-                        });
+                        verifyOtp();
                       }
                     },
                     caption: 'Verify',

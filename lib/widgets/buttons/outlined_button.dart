@@ -25,7 +25,7 @@ class OutlinedButtonWidget extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(50)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
         ),
         child: Text(

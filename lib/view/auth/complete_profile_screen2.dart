@@ -14,7 +14,6 @@ import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_toast.dart';
-import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
 import 'package:food_delivery_app/widgets/dropdowns/dropdown_widget.dart';
@@ -65,12 +64,12 @@ class _CompleteProfileScreen2State extends State<CompleteProfileScreen2> {
 
   void getLocalStorageData() {
     // get token and user id from secure storage
-    UserSecureStorage.fetchToken().then((value) {
-      token = value;
-    });
-    UserSecureStorage.fetchUserId().then((value) {
-      userId = value;
-    });
+    // UserSecureStorage.fetchToken().then((value) {
+    //   token = value;
+    // });
+    // UserSecureStorage.fetchUserId().then((value) {
+    //   userId = value;
+    // });
   }
 
   void uploadImage() {

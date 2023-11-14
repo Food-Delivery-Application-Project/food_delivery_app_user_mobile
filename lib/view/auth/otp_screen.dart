@@ -10,7 +10,6 @@ import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_toast.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
-import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/auth/recovery_password.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
@@ -72,7 +71,6 @@ class _OtpScreenState extends State<OtpScreen> {
   void dispose() {
     pinController.dispose();
     focusNode.dispose();
-    UserSecureStorage.deleteOtp();
     super.dispose();
   }
 

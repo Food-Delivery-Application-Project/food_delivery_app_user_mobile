@@ -20,7 +20,7 @@ import 'package:food_delivery_app/widgets/text_fields/password_field_widget.dart
 import 'package:food_delivery_app/widgets/text_fields/text_fields_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import 'complete_profile_screen1.dart';
+import 'complete_profile_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (isRegistering == "true") {
                   AppNavigator.goToPageWithReplacement(
                     context: context,
-                    screen: const CompleteProfileScreen1(),
+                    screen: const CompleteProfileScreen(),
                   );
                 } else {
                   AppNavigator.goToPageWithReplacement(

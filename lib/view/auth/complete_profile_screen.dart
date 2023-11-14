@@ -4,30 +4,32 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/blocs/auth/auth_bloc.dart';
 import 'package:food_delivery_app/blocs/image_picker/image_picker_bloc.dart';
 import 'package:food_delivery_app/blocs/media/media_upload_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_toast.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
-import 'package:food_delivery_app/view/auth/complete_profile_screen2.dart';
 import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
 import 'package:food_delivery_app/widgets/text_fields/text_fields_widget.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-class CompleteProfileScreen1 extends StatefulWidget {
-  const CompleteProfileScreen1({Key? key}) : super(key: key);
+class CompleteProfileScreen extends StatefulWidget {
+  const CompleteProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<CompleteProfileScreen1> createState() => _CompleteProfileScreen1State();
+  State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
 }
 
-class _CompleteProfileScreen1State extends State<CompleteProfileScreen1> {
+class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   // Blocs
   ImagePickerBloc imageBloc = ImagePickerBloc();
   MediaUploadBloc mediaUploadBloc = MediaUploadBloc();
@@ -51,21 +53,6 @@ class _CompleteProfileScreen1State extends State<CompleteProfileScreen1> {
   void initState() {
     UserSecureStorage.deleteIsRegistering();
     super.initState();
-  }
-
-  onClick() {
-    userModel = RegisterUserModel(
-      name: nameController.text.trim(),
-      // bio: bioController.text.trim(),
-      pushToken: "sample-push-token",
-    );
-
-    AppNavigator.goToPage(
-      context: context,
-      screen: CompleteProfileScreen2(
-        user: userModel,
-      ),
-    );
   }
 
   @override
@@ -168,9 +155,7 @@ class _CompleteProfileScreen1State extends State<CompleteProfileScreen1> {
                             PrimaryButtonWidget(
                                 caption: "Continue",
                                 onPressed: () async {
-                                  if (formKey.currentState!.validate()) {
-                                    await onClick();
-                                  }
+                                  if (formKey.currentState!.validate()) {}
                                 }),
                           ],
                         ),
@@ -183,6 +168,84 @@ class _CompleteProfileScreen1State extends State<CompleteProfileScreen1> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ImagePickWidget extends StatefulWidget {
+  const ImagePickWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ImagePickWidget> createState() => _ImagePickWidgetState();
+}
+
+class _ImagePickWidgetState extends State<ImagePickWidget> {
+  initBloc() {
+    context.read<ImagePickerBloc>().add(ImagePickerPickImageEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            height: 140.h,
+            width: 130.w,
+            decoration: BoxDecoration(
+              color: AppColors.lightGrey,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: BlocBuilder<ImagePickerBloc, ImagePickerState>(
+              builder: (context, state) {
+                if (state is ImagePickerPickedImageState) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.file(
+                      state.image!,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                } else {
+                  return const Center(
+                    child: Icon(
+                      LineIcons.user,
+                      size: 80,
+                      color: AppColors.darkGrey,
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          Positioned(
+            bottom: -5,
+            right: 0,
+            left: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                border: Border.all(color: AppColors.white),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const CircleAvatar(
+                  backgroundColor: AppColors.iconGrey,
+                  child: Icon(
+                    Ionicons.camera,
+                    size: 20,
+                    color: AppColors.white,
+                  ),
+                ),
+                onPressed: () {
+                  initBloc();
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

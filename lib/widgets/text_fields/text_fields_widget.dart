@@ -62,6 +62,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       readOnly: widget.readOnly ?? false,
       decoration: InputDecoration(
         labelText: widget.labelText.toUpperCase(),
+
         hintText: widget.hintText,
         hintStyle: AppTextStyle.textField,
         prefixIcon: widget.prefixIcon,
@@ -92,6 +93,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
         ),
         fillColor: AppColors.white,
         filled: true,
+        // change the color of a cursor
       ),
     );
   }

@@ -28,13 +28,12 @@ abstract class AuthController {
         'email': email,
         'password': password,
       }, url);
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         var body = jsonDecode(response.body);
 
-        ApiResponse<SignUpModel> model = ApiResponse.fromJson(
+        ApiResponse<SignUpModel> model = ApiResponse<SignUpModel>.fromJson(
           body,
-          (data) => SignUpModel.fromJson(data['data']),
+          (data) => SignUpModel.fromJson(body['data']),
         );
         return model;
       } else {
@@ -42,7 +41,7 @@ abstract class AuthController {
         throw Exception(data["message"]);
       }
     } catch (_) {
-      throw Exception("Something went wrong");
+      rethrow;
     }
   }
 

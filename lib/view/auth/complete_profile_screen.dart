@@ -129,20 +129,28 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       20.height,
-                      Text('Let’s personalize your experience',
+                      Text('Let’s finish setting up your account',
                           style: AppTextStyle.headings),
                       20.height,
                       Text(
                         'What can we call you? Could be your name, a nickname or something funny',
                         style: AppTextStyle.subHeading,
                       ),
+                      20.height,
+                      // Text regarding image
                       40.height,
                       const ImagePickWidget(),
+                      Center(
+                        child: Text(
+                          'Add a profile picture',
+                          style: AppTextStyle.subHeading,
+                        ),
+                      ),
                       20.height,
                       TextFieldWidget(
                         labelText: 'NAME',
                         controller: nameController,
-                        hintText: "Enter your name",
+                        hintText: "Enter your full name",
                         validator: AppValidators.notEmpty,
                         focusNode: nameFocusNode,
                       ),

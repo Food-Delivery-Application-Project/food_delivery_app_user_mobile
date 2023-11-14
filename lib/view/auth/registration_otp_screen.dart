@@ -43,8 +43,9 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
   void initState() {
     super.initState();
     Future.wait([UserSecureStorage.setIsRegistering('true')]);
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 1), () {
       initCubits();
+      sendOtp();
     });
   }
 
@@ -56,8 +57,8 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
       ));
   }
 
-  resendOtp() {
-    authBloc = authBloc..add(AuthEventResendOtp(email: widget.email));
+  sendOtp() {
+    authBloc = authBloc..add(AuthEventSendOtp(email: widget.email));
   }
 
   @override
@@ -77,7 +78,7 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
         listener: (context, state) {
           if (state is AuthLoadingState) {
             AppDialogs.loadingDialog(context);
-          } else if (state is AuthResentOtpState) {
+          } else if (state is AuthSentOtpState) {
             AppDialogs.closeDialog(context);
             toast(state.response.message);
           } else if (state is AuthVerificationState) {
@@ -168,7 +169,7 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     otpTimerCubit.startOtpIntervals();
-                                    resendOtp();
+                                    sendOtp();
                                   },
                                   child: Container(
                                     padding: EdgeInsets.only(

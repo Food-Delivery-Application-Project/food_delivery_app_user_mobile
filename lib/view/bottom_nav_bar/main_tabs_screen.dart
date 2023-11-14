@@ -24,11 +24,11 @@ class _MainTabScreenState extends State<MainTabScreen> {
   }
 
   final pages = [
-    Container(),
-    Container(),
-    Container(),
-    Container(),
-    Container(),
+    Scaffold(),
+    Scaffold(),
+    Scaffold(),
+    Scaffold(),
+    Scaffold(),
   ];
   @override
   Widget build(BuildContext context) {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:food_delivery_app/constants/app_url.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/auth/auth_model.dart';
+import 'package:food_delivery_app/models/auth/login_model.dart';
 import 'package:food_delivery_app/models/auth/signup_model.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:food_delivery_app/utils/api_manager.dart';
@@ -33,7 +34,7 @@ abstract class AuthController {
 
         ApiResponse<SignUpModel> model = ApiResponse.fromJson(
           body,
-          (data) => SignUpModel.fromJson(data),
+          (data) => SignUpModel.fromJson(data['data']),
         );
         return model;
       } else {
@@ -45,8 +46,7 @@ abstract class AuthController {
     }
   }
 
-  static Future<ApiResponse<dynamic>> resendVerificationMail(
-      String email) async {
+  static Future<ApiResponse<dynamic>> sendOtp(String email) async {
     const url = AuthUrl.resendVerificationMail;
 
     try {
@@ -98,6 +98,31 @@ abstract class AuthController {
     }
   }
 
+  static Future<ApiResponse<LoginModel>> login(
+      String email, String password) async {
+    const url = AuthUrl.login;
+
+    try {
+      final response = await ApiManager.postRequest(
+        {"email": email, "password": password},
+        url,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+        ApiResponse<LoginModel> model = ApiResponse.fromJson(
+          body,
+          (data) => LoginModel.fromJson(body['data']),
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   static Future<AuthModel> verifyAccount(String email) async {
     final url = "${AuthUrl.verifyEmail}/$email";
 
@@ -123,20 +148,6 @@ abstract class AuthController {
           "Content-Type": "application/json",
         },
       );
-      return _getResponse(response);
-    } catch (_) {
-      rethrow;
-    }
-  }
-
-  static Future<AuthModel> login(String email, String password) async {
-    const url = AuthUrl.login;
-    try {
-      final response = await ApiManager.postRequest({
-        'email': email,
-        'password': password,
-      }, url);
-
       return _getResponse(response);
     } catch (_) {
       rethrow;

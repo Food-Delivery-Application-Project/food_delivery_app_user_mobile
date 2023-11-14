@@ -23,10 +23,10 @@ class AuthEventVerifyOtp extends AuthEvent {
   AuthEventVerifyOtp({required this.email, required this.otp});
 }
 
-class AuthEventResendOtp extends AuthEvent {
+class AuthEventSendOtp extends AuthEvent {
   final String email;
 
-  AuthEventResendOtp({required this.email});
+  AuthEventSendOtp({required this.email});
 }
 
 class AuthEventVerifyEmail extends AuthEvent {
@@ -81,7 +81,7 @@ class AuthVerificationState extends AuthState {
 }
 
 class AuthLoginState extends AuthState {
-  final AuthModel response;
+  final ApiResponse<LoginModel> response;
   AuthLoginState({required this.response});
 }
 
@@ -100,9 +100,9 @@ class AuthVerifyOtpState extends AuthState {
   AuthVerifyOtpState({required this.response});
 }
 
-class AuthResentOtpState extends AuthState {
+class AuthSentOtpState extends AuthState {
   final ApiResponse<dynamic> response;
-  AuthResentOtpState({required this.response});
+  AuthSentOtpState({required this.response});
 }
 
 class AuthChangePasswordAfterOtpVerificationState extends AuthState {

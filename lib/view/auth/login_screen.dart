@@ -9,10 +9,10 @@ import 'package:food_delivery_app/global/fonts/app_fonts.dart';
 import 'package:food_delivery_app/global/pixels/app_pixels.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
-import 'package:food_delivery_app/utils/app_snackbars.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/auth/forget_password.dart';
+import 'package:food_delivery_app/view/auth/registration_otp_screen.dart';
 import 'package:food_delivery_app/view/auth/registration_screen.dart';
 import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
@@ -56,22 +56,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   initLocalStorage(var data) async {
     Future.wait([
-      UserSecureStorage.setToken(data?.accessToken),
-      UserSecureStorage.setUserId(data?.userId),
-      UserSecureStorage.setExpiryTime(data?.tokenExpiresAt),
+      // UserSecureStorage.setToken(data?.accessToken),
+      // UserSecureStorage.setUserId(data?.userId),
+      // UserSecureStorage.setExpiryTime(data?.tokenExpiresAt),
     ]);
   }
 
   login() {
     if (formKey.currentState!.validate()) {
-      // authBloc = authBloc
-      //   ..add(
-      //     AuthEventLogin(
-      //       email: emailController.text.trim(),
-      //       password: passwordController.text.trim(),
-      //     ),
-      //   );
-      AppSnackbars.normal(context, "Navigate to home screen");
+      authBloc = authBloc
+        ..add(
+          AuthEventLogin(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          ),
+        );
     }
   }
 
@@ -101,15 +100,24 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (state is AuthLoginState) {
               AppDialogs.closeDialog(context);
               await initLocalStorage(state.response.data);
-              if (isRegistering == "true") {
-                AppNavigator.goToPageWithReplacement(
-                  context: context,
-                  screen: const CompleteProfileScreen1(),
-                );
+              if (state.response.data.isVerified == "true") {
+                if (isRegistering == "true") {
+                  AppNavigator.goToPageWithReplacement(
+                    context: context,
+                    screen: const CompleteProfileScreen1(),
+                  );
+                } else {
+                  AppNavigator.goToPageWithReplacement(
+                    context: context,
+                    screen: const MainTabScreen(index: 0),
+                  );
+                }
               } else {
-                AppNavigator.goToPageWithReplacement(
+                AppNavigator.goToPage(
                   context: context,
-                  screen: const MainTabScreen(index: 0),
+                  screen: RegistrationOtpScreen(
+                    email: emailController.text.trim(),
+                  ),
                 );
               }
             } else if (state is AuthStateFailure) {

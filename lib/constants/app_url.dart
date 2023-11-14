@@ -9,7 +9,7 @@ abstract class AuthUrl {
   static const String emailVerification =
       "${AppUrl.baseUrl}/api/auth/verify-account";
   static const String resendVerificationMail = "${AppUrl.baseUrl}/resend-otp";
-  static const String login = "${AppUrl.baseUrl}/api/auth/login";
+  static const String login = "${AppUrl.baseUrl}/Login";
   static const String verifyEmail = "${AppUrl.baseUrl}/api/auth/verify-account";
   static const String completeProfile =
       "${AppUrl.baseUrl}/api/user/finish-setup";

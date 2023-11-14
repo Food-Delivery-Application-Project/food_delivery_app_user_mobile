@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/controllers/auth/auth_controller.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/auth/auth_model.dart';
+import 'package:food_delivery_app/models/auth/login_model.dart';
 import 'package:food_delivery_app/models/auth/signup_model.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:food_delivery_app/utils/media_utils.dart';
@@ -51,14 +52,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     // Handle resend otp event
-    on<AuthEventResendOtp>((event, emit) async {
+    on<AuthEventSendOtp>((event, emit) async {
       emit(AuthLoadingState());
       try {
         bool networkStatus = await isNetworkAvailable();
         if (networkStatus == true) {
-          final response =
-              await AuthController.resendVerificationMail(event.email);
-          emit(AuthResentOtpState(response: response));
+          final response = await AuthController.sendOtp(event.email);
+          emit(AuthSentOtpState(response: response));
         } else {
           throw Exception("No Internet Connection");
         }

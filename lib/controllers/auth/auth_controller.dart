@@ -4,10 +4,12 @@ import 'package:food_delivery_app/constants/app_url.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/auth/auth_model.dart';
 import 'package:food_delivery_app/models/auth/login_model.dart';
+import 'package:food_delivery_app/models/auth/otp_model.dart';
 import 'package:food_delivery_app/models/auth/signup_model.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:food_delivery_app/utils/api_manager.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:http/http.dart';
 
 abstract class AuthController {
   static Future<AuthModel> _getResponse(var response) async {
@@ -45,7 +47,7 @@ abstract class AuthController {
     }
   }
 
-  static Future<ApiResponse<dynamic>> sendOtp(String email) async {
+  static Future<ApiResponse<OtpModel>> sendOtp(String email) async {
     const url = AuthUrl.resendVerificationMail;
 
     try {
@@ -57,9 +59,9 @@ abstract class AuthController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         var body = jsonDecode(response.body);
 
-        ApiResponse<dynamic> model = ApiResponse.fromJson(
+        ApiResponse<OtpModel> model = ApiResponse.fromJson(
           body,
-          (data) => null,
+          (data) => OtpModel.fromJson(body['data']),
         );
         return model;
       } else {
@@ -122,32 +124,55 @@ abstract class AuthController {
     }
   }
 
-  static Future<AuthModel> verifyAccount(String email) async {
-    final url = "${AuthUrl.verifyEmail}/$email";
-
-    try {
-      final response = await ApiManager.bodyLessPut(url);
-      return _getResponse(response);
-    } catch (_) {
-      rethrow;
-    }
-  }
-
-  static Future<AuthModel> completeProfile({
+  static Future<ApiResponse<dynamic>> completeProfile({
     required RegisterUserModel user,
-    required String token,
   }) async {
-    const url = AuthUrl.completeProfile;
+    final url = "${AuthUrl.completeProfile}/${user.userId}";
     try {
-      final response = await ApiManager.putRequest(
-        user.toJson(),
-        url,
-        headers: {
-          "Authorization": token,
-          "Content-Type": "application/json",
-        },
+// multi part request
+      var request = MultipartRequest(
+        'PUT',
+        Uri.parse(url),
       );
-      return _getResponse(response);
+
+      request.headers.addAll({"authorization": "Bearer ${user.pushToken}"});
+
+      // send the file as a part of the request
+
+      // if the user.profilePic parameter is not null then send the file otherwise
+      // don't send the file
+      if (user.profilePic != null) {
+        print("inside");
+        request.files.add(
+          MultipartFile(
+            'ProfileImage',
+            user.profilePic!.readAsBytes().asStream(),
+            user.profilePic!.lengthSync(),
+            filename: user.profilePic!.path.split('/').last,
+          ),
+        );
+      } else {
+        print("outside");
+      }
+
+      // send other fields
+      request.fields["Phone"] = user.phone.toString();
+      request.fields["fullName"] = user.name.toString();
+
+      // send request
+      var response = await request.send();
+      // print response
+      var body = jsonDecode(await response.stream.bytesToString());
+      if (response.statusCode == 200) {
+        // success
+        ApiResponse<dynamic> model = ApiResponse<dynamic>.fromJson(
+          body,
+          (data) => null,
+        );
+        return model;
+      } else {
+        throw Exception(body['message']);
+      }
     } catch (_) {
       rethrow;
     }

@@ -5,6 +5,7 @@ class UserSecureStorage {
 
   static const _keyToken = 'token';
   static const _isRegistering = 'isRegistering';
+  static const userId = 'userId';
 
   static Future<void> setToken(String token) async {
     await _storage.write(key: _keyToken, value: token);
@@ -28,6 +29,14 @@ class UserSecureStorage {
 
   static Future<void> deleteIsRegistering() async {
     await _storage.delete(key: _isRegistering);
+  }
+
+  static Future<void> setUserId(String value) async {
+    await _storage.write(key: userId, value: value);
+  }
+
+  static Future<String?> fetchUserId() async {
+    return await _storage.read(key: userId);
   }
 
   static Future<void> clearAll() async {

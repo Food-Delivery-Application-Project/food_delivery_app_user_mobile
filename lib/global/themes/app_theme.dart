@@ -6,4 +6,10 @@ abstract class AppTheme {
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
     useMaterial3: true,
   );
+
+  static final dark = ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+    useMaterial3: true,
+    scaffoldBackgroundColor: AppColors.darkBackground,
+  );
 }

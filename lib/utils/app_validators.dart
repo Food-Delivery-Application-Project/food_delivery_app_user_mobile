@@ -35,4 +35,15 @@ class AppValidators {
       return "The field cannot be empty";
     }
   };
+
+  static var phone = (String? value) {
+    if (value!.isEmpty) {
+      return "Phone number cannot be empty";
+    }
+    // create a regular expression for the phone number
+    RegExp regExp = RegExp(r'^[0-9]{10}$');
+    // if (!regExp.hasMatch(value)) {
+    //   return "Invalid Phone Number. Please enter a valid phone number";
+    // }
+  };
 }

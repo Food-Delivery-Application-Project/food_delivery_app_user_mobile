@@ -22,4 +22,8 @@ class AppColors {
   static const white = Color.fromRGBO(255, 255, 255, 1);
   static const success = Color.fromRGBO(0, 215, 0, 1);
   static const transparent = Colors.transparent;
+
+  // background colors
+  static const lightBackground = Color.fromRGBO(242, 242, 242, 1);
+  static const darkBackground = Color.fromRGBO(33, 33, 33, 1);
 }

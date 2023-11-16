@@ -11,8 +11,7 @@ abstract class AuthUrl {
   static const String resendVerificationMail = "${AppUrl.baseUrl}/resend-otp";
   static const String login = "${AppUrl.baseUrl}/Login";
   static const String verifyEmail = "${AppUrl.baseUrl}/api/auth/verify-account";
-  static const String completeProfile =
-      "${AppUrl.baseUrl}/api/user/finish-setup";
+  static const String completeProfile = "${AppUrl.baseUrl}/update-user";
   static const String sendVerificationMailForPasswordReset =
       "${AppUrl.baseUrl}/api/auth/send-otp";
   static const String changePassword =

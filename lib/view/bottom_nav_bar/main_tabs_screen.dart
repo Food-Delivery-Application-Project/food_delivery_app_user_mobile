@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
+import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
+import 'package:ionicons/ionicons.dart';
 
 class MainTabScreen extends StatefulWidget {
   final int index;
@@ -24,7 +26,9 @@ class _MainTabScreenState extends State<MainTabScreen> {
   }
 
   final pages = [
-    Scaffold(),
+    Scaffold(
+      appBar: BasicAppbarWidget(title: "Home", isBackButton: false),
+    ),
     Scaffold(),
     Scaffold(),
     Scaffold(),
@@ -42,60 +46,23 @@ class _MainTabScreenState extends State<MainTabScreen> {
         showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
-        items: [
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: Image.asset(
-          //     pageIndex == 0
-          //         ? ImageAssets.homeImage
-          //         : ImageAssets.homeUnselectedImage,
-          //     height: 30.h,
-          //   ),
-          // ),
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: Image.asset(
-          //     pageIndex == 1
-          //         ? ImageAssets.selectedGroupImage
-          //         : ImageAssets.groupImage,
-          //     height: 30.h,
-          //   ),
-          // ),
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: SizedBox(
-          //     width: 60.h,
-          //     height: 60.h,
-          //     child: FloatingActionButton(
-          //       backgroundColor: AppColors.primary,
-          //       foregroundColor: AppColors.white,
-          //       shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(100)),
-          //       onPressed: () {
-          //         selectedIndex(1);
-          //       },
-          //       child: const Icon(Icons.add),
-          //     ),
-          //   ),
-          // ),
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: Image.asset(
-          //     pageIndex == 3
-          //         ? ImageAssets.messageSelectedImage
-          //         : ImageAssets.messageImage,
-          //     height: 30.h,
-          //   ),
-          // ),
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: Image.asset(
-          //     pageIndex == 4
-          //         ? ImageAssets.profileSelectedImage
-          //         : ImageAssets.profileImage,
-          //     height: 30.h,
-          //   ),
-          // ),
+        items: const [
+          BottomNavigationBarItem(
+            label: "",
+            icon: Icon(Ionicons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "",
+            icon: Icon(Ionicons.accessibility),
+          ),
+          BottomNavigationBarItem(
+            label: "",
+            icon: Icon(Ionicons.accessibility),
+          ),
+          BottomNavigationBarItem(
+            label: "",
+            icon: Icon(Ionicons.accessibility),
+          ),
         ],
         onTap: (value) {
           selectedIndex(value);

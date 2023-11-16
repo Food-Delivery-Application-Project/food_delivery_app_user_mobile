@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,16 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/blocs/auth/auth_bloc.dart';
 import 'package:food_delivery_app/blocs/image_picker/image_picker_bloc.dart';
-import 'package:food_delivery_app/blocs/media/media_upload_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
-import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_toast.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
-import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
 import 'package:food_delivery_app/widgets/text_fields/text_fields_widget.dart';
 import 'package:ionicons/ionicons.dart';
@@ -32,16 +27,15 @@ class CompleteProfileScreen extends StatefulWidget {
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   // Blocs
   ImagePickerBloc imageBloc = ImagePickerBloc();
-  MediaUploadBloc mediaUploadBloc = MediaUploadBloc();
   AuthBloc authBloc = AuthBloc();
 
   // Controllers
   TextEditingController nameController = TextEditingController();
-  TextEditingController bioController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
 
   // Focus node
   FocusNode nameFocusNode = FocusNode();
-  FocusNode bioFocusNode = FocusNode();
+  FocusNode phoneFocusNode = FocusNode();
 
   // form key
   final formKey = GlobalKey<FormState>();
@@ -49,16 +43,43 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   late RegisterUserModel userModel;
   File? image;
 
+  // Local storage variables
+  String? userId, token;
+
   @override
   void initState() {
-    UserSecureStorage.deleteIsRegistering();
     super.initState();
+  }
+
+  getLocalStorage() {
+    UserSecureStorage.fetchToken().then((value) {
+      token = value;
+    });
+    UserSecureStorage.fetchUserId().then((value) {
+      userId = value;
+    });
+  }
+
+  updateProfile() {
+    authBloc = authBloc
+      ..add(AuthEventCompleteProfile(
+          user: RegisterUserModel(
+        userId: "65537448454f83bbda814ed8",
+        name: nameController.text.trim(),
+        phone: phoneController.text.trim(),
+        profilePic: image,
+        pushToken:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTUzNzQ0ODQ1NGY4M2JiZGE4MTRlZDgiLCJpYXQiOjE3MDAwMjY3NjksImV4cCI6MTcwMDAyNzM2OX0.JrQWwr23mfV_hTiLd6ETy8xZizO-iR33Pjfvh68V6o0",
+      )));
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    bioController.dispose();
+    phoneController.dispose();
+
+    nameFocusNode.dispose();
+    phoneFocusNode.dispose();
     super.dispose();
   }
 
@@ -72,42 +93,31 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               listener: (context, state) async {
                 if (state is ImagePickerPickedImageState) {
                   image = state.image;
+                } else if (state is ImagePickerRemoveImageState) {
+                  image = null;
                 } else if (state is ImagePickerFailureState) {
                   AppToast.danger("Failed to pick image");
                 }
               },
             ),
-            BlocListener<MediaUploadBloc, MediaUploadState>(
-              bloc: mediaUploadBloc,
-              listener: (context, state) {
-                if (state is MediaUploadLoading) {
-                  AppDialogs.loadingDialog(context);
-                } else if (state is MediaUploadSuccess) {
-                  AppDialogs.closeDialog(context);
-                  // save the name of the image
-                  // saveFilePath(state.response);
-                  AppToast.success(state.response.message);
-                  // completeProfile();
-                } else if (state is MediaUploadFailure) {
-                  AppDialogs.closeDialog(context);
-                  AppToast.danger(state.error);
-                } else {
-                  AppDialogs.closeDialog(context);
-                }
-              },
-            ),
+
             // Auth bloc listener
             BlocListener<AuthBloc, AuthState>(
               bloc: authBloc,
               listener: (context, state) {
                 if (state is AuthLoadingState) {
+                  // unfocus all the text fields and hide keyboard.
+                  nameFocusNode.unfocus();
+                  phoneFocusNode.unfocus();
+
                   AppDialogs.loadingDialog(context);
                 } else if (state is AuthCompleteProfileState) {
                   AppDialogs.closeDialog(context);
-                  AppNavigator.goToPageWithReplacement(
-                    context: context,
-                    screen: const MainTabScreen(index: 0),
-                  );
+                  AppToast.success("Profile updated successfully");
+                  // AppNavigator.goToPageWithReplacement(
+                  //   context: context,
+                  //   screen: MainTabScreen(index: 0),
+                  // );
                 } else if (state is AuthStateFailure) {
                   AppDialogs.closeDialog(context);
                   AppToast.danger(state.message);
@@ -155,18 +165,25 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         focusNode: nameFocusNode,
                       ),
                       20.height,
-                      SizedBox(
-                        height: context.height() * 0.3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            PrimaryButtonWidget(
-                                caption: "Continue",
-                                onPressed: () async {
-                                  if (formKey.currentState!.validate()) {}
-                                }),
-                          ],
-                        ),
+                      TextFieldWidget(
+                        labelText: 'phone',
+                        controller: phoneController,
+                        hintText: "Enter your phone number",
+                        validator: AppValidators.phone,
+                        focusNode: phoneFocusNode,
+                      ),
+                      20.height,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          PrimaryButtonWidget(
+                              caption: "Continue",
+                              onPressed: () async {
+                                if (formKey.currentState!.validate()) {
+                                  updateProfile();
+                                }
+                              }),
+                        ],
                       ),
                       30.height,
                     ],
@@ -189,8 +206,12 @@ class ImagePickWidget extends StatefulWidget {
 }
 
 class _ImagePickWidgetState extends State<ImagePickWidget> {
-  initBloc() {
+  pickImage() {
     context.read<ImagePickerBloc>().add(ImagePickerPickImageEvent());
+  }
+
+  removeImage() {
+    context.read<ImagePickerBloc>().add(ImagePickerRemoveImageEvent());
   }
 
   @override
@@ -211,9 +232,33 @@ class _ImagePickWidgetState extends State<ImagePickWidget> {
                 if (state is ImagePickerPickedImageState) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(40),
-                    child: Image.file(
-                      state.image!,
-                      fit: BoxFit.cover,
+                    // image with cross button to remove selected image
+                    child: Stack(
+                      children: [
+                        Image.file(
+                          state.image!,
+                          fit: BoxFit.cover,
+                          height: 140.h,
+                          width: 130.w,
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: IconButton(
+                            icon: const CircleAvatar(
+                              backgroundColor: AppColors.iconGrey,
+                              child: Icon(
+                                Ionicons.close,
+                                size: 20,
+                                color: AppColors.white,
+                              ),
+                            ),
+                            onPressed: () {
+                              removeImage();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 } else {
@@ -248,7 +293,7 @@ class _ImagePickWidgetState extends State<ImagePickWidget> {
                   ),
                 ),
                 onPressed: () {
-                  initBloc();
+                  pickImage();
                 },
               ),
             ),

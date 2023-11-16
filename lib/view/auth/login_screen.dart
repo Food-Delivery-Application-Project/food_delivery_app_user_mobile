@@ -7,12 +7,12 @@ import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/global/fonts/app_fonts.dart';
 import 'package:food_delivery_app/global/pixels/app_pixels.dart';
+import 'package:food_delivery_app/models/auth/login_model.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/auth/forget_password.dart';
-import 'package:food_delivery_app/view/auth/registration_otp_screen.dart';
 import 'package:food_delivery_app/view/auth/registration_screen.dart';
 import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
@@ -54,11 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
-  initLocalStorage(var data) async {
+  initLocalStorage(LoginModel data) async {
     Future.wait([
-      // UserSecureStorage.setToken(data?.accessToken),
-      // UserSecureStorage.setUserId(data?.userId),
-      // UserSecureStorage.setExpiryTime(data?.tokenExpiresAt),
+      UserSecureStorage.setToken(data.accessToken.toString()),
+      UserSecureStorage.setUserId(data.sId.toString()),
     ]);
   }
 
@@ -100,24 +99,15 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (state is AuthLoginState) {
               AppDialogs.closeDialog(context);
               await initLocalStorage(state.response.data);
-              if (state.response.data.isVerified == "true") {
-                if (isRegistering == "true") {
-                  AppNavigator.goToPageWithReplacement(
-                    context: context,
-                    screen: const CompleteProfileScreen(),
-                  );
-                } else {
-                  AppNavigator.goToPageWithReplacement(
-                    context: context,
-                    screen: const MainTabScreen(index: 0),
-                  );
-                }
+              if (state.response.data.isNewUser == true) {
+                AppNavigator.goToPage(
+                  context: context,
+                  screen: const CompleteProfileScreen(),
+                );
               } else {
                 AppNavigator.goToPage(
                   context: context,
-                  screen: RegistrationOtpScreen(
-                    email: emailController.text.trim(),
-                  ),
+                  screen: const MainTabScreen(index: 0),
                 );
               }
             } else if (state is AuthStateFailure) {

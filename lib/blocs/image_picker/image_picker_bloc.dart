@@ -17,5 +17,13 @@ class ImagePickerBloc extends Bloc<ImagePickerEvent, ImagePickerState> {
         emit(ImagePickerFailureState(message: e.toString()));
       }
     });
+
+    on<ImagePickerRemoveImageEvent>((event, emit) async {
+      try {
+        emit(ImagePickerRemoveImageState());
+      } catch (e) {
+        emit(ImagePickerFailureState(message: e.toString()));
+      }
+    });
   }
 }

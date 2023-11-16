@@ -9,7 +9,6 @@ import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_validators.dart';
-import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/auth/login_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
@@ -42,7 +41,6 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
   @override
   void initState() {
     super.initState();
-    Future.wait([UserSecureStorage.setIsRegistering('true')]);
     Future.delayed(Duration(seconds: 1), () {
       initCubits();
       sendOtp();
@@ -81,6 +79,7 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
           } else if (state is AuthSentOtpState) {
             AppDialogs.closeDialog(context);
             toast(state.response.message);
+            pinController.text = state.response.data.otp.toString();
           } else if (state is AuthVerificationState) {
             AppNavigator.goToPage(
               context: context,
@@ -90,8 +89,7 @@ class _RegistrationOtpScreenState extends State<RegistrationOtpScreen> {
             AppDialogs.closeDialog(context);
             AppDialogs.otpSuccessDialog(context, onPressed: () {
               // verify email
-              authBloc = authBloc
-                ..add(AuthEventVerifyEmail(email: widget.email));
+              AppNavigator.goToPage(context: context, screen: LoginScreen());
             });
           } else if (state is AuthStateFailure) {
             AppDialogs.closeDialog(context);

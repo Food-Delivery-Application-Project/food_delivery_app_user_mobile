@@ -37,9 +37,8 @@ class AuthEventVerifyEmail extends AuthEvent {
 
 class AuthEventCompleteProfile extends AuthEvent {
   final RegisterUserModel user;
-  final String token;
 
-  AuthEventCompleteProfile({required this.user, required this.token});
+  AuthEventCompleteProfile({required this.user});
 }
 
 class AuthEventSendVerificationForPasswordReset extends AuthEvent {
@@ -86,7 +85,7 @@ class AuthLoginState extends AuthState {
 }
 
 class AuthCompleteProfileState extends AuthState {
-  final AuthModel response;
+  final ApiResponse<dynamic> response;
   AuthCompleteProfileState({required this.response});
 }
 
@@ -101,7 +100,7 @@ class AuthVerifyOtpState extends AuthState {
 }
 
 class AuthSentOtpState extends AuthState {
-  final ApiResponse<dynamic> response;
+  final ApiResponse<OtpModel> response;
   AuthSentOtpState({required this.response});
 }
 

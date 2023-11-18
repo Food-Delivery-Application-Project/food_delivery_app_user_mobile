@@ -1,73 +1,71 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
-import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
 
-class MainTabScreen extends StatefulWidget {
+class MainTabsScreen extends StatefulWidget {
   final int index;
-
-  const MainTabScreen({super.key, required this.index});
+  const MainTabsScreen({Key? key, required this.index}) : super(key: key);
 
   @override
-  State<MainTabScreen> createState() => _MainTabScreenState();
+  State<MainTabsScreen> createState() => _MainTabsScreenState();
 }
 
-class _MainTabScreenState extends State<MainTabScreen> {
-  int pageIndex = 0;
-  @override
-  void initState() {
-    pageIndex = widget.index;
-
-    super.initState();
-  }
-
-  void selectedIndex(int index) {
-    setState(() => pageIndex = index);
-  }
-
-  final pages = [
-    Scaffold(
-      appBar: BasicAppbarWidget(title: "Home", isBackButton: false),
-    ),
-    Scaffold(),
-    Scaffold(),
-    Scaffold(),
-    Scaffold(),
+class _MainTabsScreenState extends State<MainTabsScreen> {
+  final iconList = <IconData>[
+    Icons.home,
+    Icons.search,
+    Icons.shopping_cart,
+    Icons.person,
   ];
+
+  final screens = <Widget>[
+    HomeScreen(),
+    Container(),
+    Container(),
+    Container(),
+  ];
+
+  var _bottomNavIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: pageIndex, children: pages),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 10,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: AppColors.white,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            label: "",
-            icon: Icon(Ionicons.home),
+      body: screens[_bottomNavIndex], //destination screen
+      floatingActionButton: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: AppColors.primary,
+        ),
+        child: FloatingActionButton(
+          onPressed: () {},
+          elevation: 2,
+          backgroundColor: AppColors.black,
+          // make it circular
+          shape: const CircleBorder(),
+
+          child: const Icon(
+            Icons.add,
+            color: AppColors.white,
           ),
-          BottomNavigationBarItem(
-            label: "",
-            icon: Icon(Ionicons.accessibility),
-          ),
-          BottomNavigationBarItem(
-            label: "",
-            icon: Icon(Ionicons.accessibility),
-          ),
-          BottomNavigationBarItem(
-            label: "",
-            icon: Icon(Ionicons.accessibility),
-          ),
-        ],
-        onTap: (value) {
-          selectedIndex(value);
-        },
-        currentIndex: pageIndex,
+          //params
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: AnimatedBottomNavigationBar(
+        icons: iconList,
+        activeIndex: _bottomNavIndex,
+        gapLocation: GapLocation.center,
+        borderWidth: 3,
+        borderColor: AppColors.primary,
+        activeColor: AppColors.primary,
+        inactiveColor: AppColors.white,
+        backgroundColor: AppColors.black,
+        notchSmoothness: NotchSmoothness.softEdge,
+        leftCornerRadius: 32,
+        rightCornerRadius: 32,
+        onTap: (index) => setState(() => _bottomNavIndex = index),
+        //other params
       ),
     );
   }

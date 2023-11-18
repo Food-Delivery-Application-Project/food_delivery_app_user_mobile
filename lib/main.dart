@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/constants/bloc_provider.dart';
 import 'package:food_delivery_app/global/themes/app_theme.dart';
-import 'package:food_delivery_app/view/auth/welcome_screen.dart';
+import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 void main() async {
@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
               title: 'Habibi',
               navigatorKey: navigatorKey,
               theme: AppTheme.light,
-              home: const WelcomeScreen(),
+              home: const MainTabsScreen(index: 0),
             ),
           ),
         );

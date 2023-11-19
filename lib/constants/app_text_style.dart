@@ -20,15 +20,38 @@ class AppTextStyle {
     fontWeight: FontWeight.w500,
   );
 
+  static var foodItemName = TextStyle(
+    fontSize: AppPixels.subHeading,
+    color: AppColors.white,
+    fontWeight: FontWeight.bold,
+    fontFamily: AppFonts.jost,
+  );
+
   static var textField = TextStyle(
     fontSize: AppPixels.subHeading,
     color: AppColors.black,
     fontFamily: AppFonts.jost,
   );
 
-  static var button = const TextStyle(
+  static var button = TextStyle(
+    fontSize: AppPixels.subHeading,
+    fontFamily: AppFonts.jost,
     color: AppColors.primary,
     fontWeight: FontWeight.bold,
+  );
+
+  static var productName = TextStyle(
+    fontSize: AppPixels.subHeading,
+    color: AppColors.black,
+    fontFamily: AppFonts.jost,
+    fontWeight: FontWeight.w500,
+  );
+
+  static var productDescription = TextStyle(
+    fontSize: AppPixels.normal14,
+    color: AppColors.white,
+    fontFamily: AppFonts.jost,
+    fontWeight: FontWeight.w400,
   );
 
   static var resentOtpTextStyle = TextStyle(

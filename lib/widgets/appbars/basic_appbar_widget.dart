@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
+import 'package:food_delivery_app/global/fonts/app_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -18,8 +19,10 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
-      title: Text(title, style: AppTextStyle.headings),
+      title: Text(
+        title.toUpperCase(),
+        style: AppTextStyle.headings.copyWith(fontFamily: AppFonts.poppins),
+      ),
       centerTitle: isBackButton == true ? true : false,
       automaticallyImplyLeading: isBackButton == true ? true : false,
       leading: isBackButton == false
@@ -55,7 +58,7 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
           child: Padding(
             padding: EdgeInsets.all(8.w),
             child: Icon(
-              LineIcons.bell,
+              LineIcons.search,
               size: 30.sp,
             ),
           ),

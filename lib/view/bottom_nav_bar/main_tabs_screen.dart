@@ -2,6 +2,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
+import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
 
 class MainTabsScreen extends StatefulWidget {
   final int index;
@@ -20,7 +21,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
   ];
 
   final screens = <Widget>[
-    HomeScreen(),
+    const HomeScreen(),
     Container(),
     Container(),
     Container(),
@@ -30,6 +31,10 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const BasicAppbarWidget(
+        title: "habibi",
+        isBackButton: false,
+      ),
       body: screens[_bottomNavIndex], //destination screen
       floatingActionButton: Container(
         padding: const EdgeInsets.all(5),

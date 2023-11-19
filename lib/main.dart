@@ -3,9 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:food_delivery_app/blocs/session/session_bloc.dart';
 import 'package:food_delivery_app/constants/bloc_provider.dart';
 import 'package:food_delivery_app/global/themes/app_theme.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/view/auth/welcome_screen.dart';
 import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
+import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 void main() async {
@@ -23,6 +27,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  SessionBloc sessionBloc = SessionBloc();
+  String? userId, token;
+
+  @override
+  void initState() {
+    UserSecureStorage.fetchUserId().then((value) {
+      userId = value;
+    });
+
+    UserSecureStorage.fetchToken().then((value) {
+      token = value;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      sessionBloc.add(
+        SessionRefreshEvent(
+          token: token.toString(),
+          id: userId.toString(),
+        ),
+      );
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -41,7 +68,21 @@ class _MyAppState extends State<MyApp> {
               title: 'Habibi',
               navigatorKey: navigatorKey,
               theme: AppTheme.light,
-              home: const MainTabsScreen(index: 0),
+              home: BlocBuilder<SessionBloc, SessionState>(
+                bloc: sessionBloc,
+                builder: (context, state) {
+                  if (state is SessionHomeState) {
+                    return const MainTabsScreen(index: 0);
+                  } else if (state is SessionLoginState) {
+                    return const WelcomeScreen();
+                  } else if (state is SessionErrorState) {
+                    return const WelcomeScreen();
+                  }
+                  return const Scaffold(
+                    body: LoadingWidget(),
+                  );
+                },
+              ),
             ),
           ),
         );

@@ -142,7 +142,6 @@ abstract class AuthController {
       // if the user.profilePic parameter is not null then send the file otherwise
       // don't send the file
       if (user.profilePic != null) {
-        print("inside");
         request.files.add(
           MultipartFile(
             'ProfileImage',
@@ -151,9 +150,7 @@ abstract class AuthController {
             filename: user.profilePic!.path.split('/').last,
           ),
         );
-      } else {
-        print("outside");
-      }
+      } else {}
 
       // send other fields
       request.fields["Phone"] = user.phone.toString();

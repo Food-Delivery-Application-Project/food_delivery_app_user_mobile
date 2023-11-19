@@ -106,7 +106,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         // initBloc();
                         AppNavigator.goToPage(
                           context: context,
-                          screen: OtpScreen(email: ""),
+                          screen: OtpScreen(email: emailController.text.trim()),
                         );
                       }
                     },

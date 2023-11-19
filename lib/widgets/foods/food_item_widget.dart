@@ -53,8 +53,8 @@ class FoodItem extends StatelessWidget {
                         backgroundColor: AppColors.white,
                         radius: 15,
                         child: Icon(
-                          Ionicons.heart,
-                          color: AppColors.red,
+                          Ionicons.cart,
+                          color: AppColors.primary,
                           size: 20,
                           shadows: [
                             Shadow(
@@ -100,7 +100,7 @@ class FoodItem extends StatelessWidget {
                 Row(
                   children: [
                     AutoSizeText(
-                      "PKR: " + "1000",
+                      "PKR: 1000",
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: AppColors.primary,

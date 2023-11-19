@@ -12,8 +12,6 @@ class CategoryController {
     const url = "${AppUrl.baseUrl}/get-catogray";
     final response = await ApiManager.getRequest(url);
 
-    print(response.body);
-
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
       final categories = body['data'];
@@ -23,7 +21,7 @@ class CategoryController {
 
       return ApiResponse.fromJson(body, (p0) => list);
     } else {
-      throw Exception(jsonDecode(response.body)['data']);
+      throw Exception(jsonDecode(response.body)['message']);
     }
   }
 }

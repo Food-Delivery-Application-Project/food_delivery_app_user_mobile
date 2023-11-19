@@ -47,20 +47,12 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class FoodCategories extends StatefulWidget {
+class FoodCategories extends StatelessWidget {
   const FoodCategories({Key? key}) : super(key: key);
-
-  @override
-  State<FoodCategories> createState() => _FoodCategoriesState();
-}
-
-class _FoodCategoriesState extends State<FoodCategories> {
-  AllCategoriesBloc allCategoriesBloc = AllCategoriesBloc();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AllCategoriesBloc, AllCategoriesState>(
-      bloc: allCategoriesBloc..add(GetAllCategoriesEvent()),
       builder: (context, state) {
         if (state is AllCategoriesLoadingState) {
           return GridView.builder(

@@ -38,14 +38,15 @@ class _MyAppState extends State<MyApp> {
 
     UserSecureStorage.fetchToken().then((value) {
       token = value;
-    });
-    Future.delayed(const Duration(seconds: 2), () {
-      sessionBloc.add(
-        SessionRefreshEvent(
-          token: token.toString(),
-          id: userId.toString(),
-        ),
-      );
+    }).then((value) {
+      Future.delayed(const Duration(seconds: 1), () {
+        sessionBloc.add(
+          SessionRefreshEvent(
+            token: token.toString(),
+            id: userId.toString(),
+          ),
+        );
+      });
     });
     super.initState();
   }

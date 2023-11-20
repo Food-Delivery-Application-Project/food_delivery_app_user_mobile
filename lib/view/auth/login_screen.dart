@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
   initLocalStorage(LoginModel data) async {
     Future.wait([
       UserSecureStorage.setToken(data.accessToken.toString()),
-      UserSecureStorage.setUserId(data.sId.toString()),
+      UserSecureStorage.setUserId(data.userId.toString()),
     ]);
   }
 

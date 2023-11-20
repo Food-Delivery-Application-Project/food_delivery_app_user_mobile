@@ -19,6 +19,8 @@ class SessionController {
         "Authorization": "Bearer $token",
       },
     );
+    print(token);
+    print(id);
     print(response.body);
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);

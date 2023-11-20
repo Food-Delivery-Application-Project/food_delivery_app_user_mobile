@@ -15,7 +15,10 @@ class CategoryWidget extends StatelessWidget {
       onTap: () {
         AppNavigator.goToPage(
           context: context,
-          screen: FoodByCategoryIdScreen(categoryId: category.categoryId!),
+          screen: FoodByCategoryIdScreen(
+            categoryId: category.categoryId!,
+            categoryName: category.category.toString(),
+          ),
         );
       },
       child: GridTile(

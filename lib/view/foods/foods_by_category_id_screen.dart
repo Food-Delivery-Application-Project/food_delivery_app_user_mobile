@@ -3,11 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_grid_delegate.dart';
+import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
+import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 
 class FoodByCategoryIdScreen extends StatefulWidget {
   final int categoryId;
-  const FoodByCategoryIdScreen({Key? key, required this.categoryId})
+  final String categoryName;
+  const FoodByCategoryIdScreen(
+      {Key? key, required this.categoryId, required this.categoryName})
       : super(key: key);
 
   @override
@@ -33,24 +37,47 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: BackAppbarWidget(title: widget.categoryName),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: BlocBuilder(
             bloc: foodBloc,
-            builder: (context, state) => Column(
-              children: [
-                GridView.builder(
-                  gridDelegate: AppGridDelegate.foodItems,
-                  itemBuilder: (context, index) =>
-                      FoodItem(foodModel: FoodModel()),
-                  itemCount: 4,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                )
-              ],
-            ),
+            builder: (context, state) {
+              if (state is FoodLoadingState) {
+                return const LoadingWidget();
+              } else if (state is FoodErrorState) {
+                return Center(
+                  child: Text(state.message),
+                );
+              } else if (state is FoodLoadedState) {
+                return Column(
+                  children: [
+                    GridView.builder(
+                      gridDelegate: AppGridDelegate.foodItems,
+                      itemBuilder: (context, index) => FoodItem(
+                        foodModel: state.foodList.data[index],
+                      ),
+                      itemCount: state.foodList.data.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                    )
+                  ],
+                );
+              }
+              return Column(
+                children: [
+                  GridView.builder(
+                    gridDelegate: AppGridDelegate.foodItems,
+                    itemBuilder: (context, index) =>
+                        FoodItem(foodModel: FoodModel()),
+                    itemCount: 4,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                  )
+                ],
+              );
+            },
           ),
         ),
       ),

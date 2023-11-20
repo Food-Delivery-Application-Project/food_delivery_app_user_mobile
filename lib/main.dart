@@ -9,7 +9,7 @@ import 'package:food_delivery_app/global/themes/app_theme.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/auth/welcome_screen.dart';
 import 'package:food_delivery_app/view/bottom_nav_bar/main_tabs_screen.dart';
-import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
+import 'package:food_delivery_app/view/splash/splash_screen.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 void main() async {
@@ -78,9 +78,7 @@ class _MyAppState extends State<MyApp> {
                   } else if (state is SessionErrorState) {
                     return const WelcomeScreen();
                   }
-                  return const Scaffold(
-                    body: LoadingWidget(),
-                  );
+                  return const SplashScreen();
                 },
               ),
             ),

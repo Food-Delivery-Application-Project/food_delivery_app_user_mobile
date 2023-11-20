@@ -5,8 +5,8 @@ import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
 
 class MainTabsScreen extends StatefulWidget {
-  final int index;
-  const MainTabsScreen({Key? key, required this.index}) : super(key: key);
+  final int? index;
+  const MainTabsScreen({Key? key, this.index}) : super(key: key);
 
   @override
   State<MainTabsScreen> createState() => _MainTabsScreenState();

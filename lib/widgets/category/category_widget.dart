@@ -14,7 +14,10 @@ class CategoryWidget extends StatelessWidget {
         alignment: Alignment.topLeft,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
           color: AppColors.black.withOpacity(0.5),
         ),
         child: Text(

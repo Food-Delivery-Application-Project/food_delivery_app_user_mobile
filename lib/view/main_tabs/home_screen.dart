@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/utils/app_builders.dart';
 import 'package:food_delivery_app/utils/app_grid_delegate.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
-import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
+import 'package:food_delivery_app/widgets/shimmer/category_shimmer.dart';
 import 'package:food_delivery_app/widgets/text/heading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -55,24 +56,16 @@ class FoodCategories extends StatelessWidget {
     return BlocBuilder<AllCategoriesBloc, AllCategoriesState>(
       builder: (context, state) {
         if (state is AllCategoriesLoadingState) {
-          return GridView.builder(
-            gridDelegate: AppGridDelegate.categories,
-            itemBuilder: (context, index) => const LoadingWidget(),
-            itemCount: 4,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-          );
+          return AppBuilders.categories(
+              (context, index) => const CategoryShimmer(), 4);
         } else if (state is AllCategoriesErrorState) {
           return Text(state.message);
         } else if (state is AllCategoriesLoadedState) {
-          return GridView.builder(
-            gridDelegate: AppGridDelegate.categories,
-            itemBuilder: (context, index) => CategoryWidget(
+          return AppBuilders.categories(
+            (context, index) => CategoryWidget(
               category: state.categories.data[index],
             ),
-            itemCount: state.categories.data.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            state.categories.data.length,
           );
         } else {
           return Container();

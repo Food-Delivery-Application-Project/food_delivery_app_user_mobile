@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
 import 'package:food_delivery_app/utils/app_grid_delegate.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
@@ -81,7 +82,7 @@ class FavoriteFoods extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       gridDelegate: AppGridDelegate.foodItems,
-      itemBuilder: (context, index) => const FoodItem(),
+      itemBuilder: (context, index) => FoodItem(foodModel: FoodModel()),
       itemCount: 4,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

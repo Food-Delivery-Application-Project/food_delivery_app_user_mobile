@@ -30,7 +30,7 @@ class CategoryWidget extends StatelessWidget {
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
-            color: AppColors.black.withOpacity(0.5),
+            color: AppColors.darkBackground.withOpacity(0.5),
           ),
           child: Text(
             category.category.toString(),

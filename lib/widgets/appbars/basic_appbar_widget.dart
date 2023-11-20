@@ -19,6 +19,7 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: AppColors.white,
       title: Text(
         title.toUpperCase(),
         style: AppTextStyle.headings.copyWith(fontFamily: AppFonts.poppins),
@@ -38,7 +39,9 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
                     color: AppColors.white,
                     shape: RoundedRectangleBorder(
                       side: const BorderSide(
-                          width: 1.5, color: AppColors.borderGrey),
+                        width: 1.5,
+                        color: AppColors.borderGrey,
+                      ),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),

@@ -34,7 +34,7 @@ class FoodItem extends StatelessWidget {
                     ),
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.black,
+                        AppColors.darkBackground,
                         AppColors.transparent,
                       ],
                       begin: Alignment.topLeft,

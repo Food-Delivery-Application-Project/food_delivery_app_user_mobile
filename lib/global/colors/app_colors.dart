@@ -6,6 +6,8 @@ class AppColors {
   // static const primaryShade = Color.fromRGBO(194, 51, 115, 1);
   static const primary = Colors.amber;
   static const primaryShade = Colors.amberAccent;
+  // dark black color
+  static const darkBlack = Color.fromRGBO(33, 33, 33, 1);
 
   // Danger Colors
   static const dangerColor = Color.fromRGBO(215, 0, 0, 1);

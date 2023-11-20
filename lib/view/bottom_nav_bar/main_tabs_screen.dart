@@ -45,7 +45,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
         child: FloatingActionButton(
           onPressed: () {},
           elevation: 2,
-          backgroundColor: AppColors.black,
+          backgroundColor: AppColors.darkBlack,
           // make it circular
           shape: const CircleBorder(),
 
@@ -65,7 +65,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
         borderColor: AppColors.primary,
         activeColor: AppColors.primary,
         inactiveColor: AppColors.white,
-        backgroundColor: AppColors.black,
+        backgroundColor: AppColors.darkBlack,
         notchSmoothness: NotchSmoothness.softEdge,
         leftCornerRadius: 32,
         rightCornerRadius: 32,

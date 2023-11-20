@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_grid_delegate.dart';
-import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
+import 'package:food_delivery_app/widgets/appbars/two_buttons_appbar.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
+import 'package:ionicons/ionicons.dart';
 
 class FoodByCategoryIdScreen extends StatefulWidget {
   final int categoryId;
@@ -37,7 +38,15 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BackAppbarWidget(title: widget.categoryName),
+      appBar: TwoButtonsAppbar(
+        title: widget.categoryName,
+        icon: Ionicons.refresh,
+        onPressed: () {
+          foodBloc.add(
+            FoodGetByCategoryIdEvent(widget.categoryId, page, paginatedBy),
+          );
+        },
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
@@ -45,7 +54,13 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
             bloc: foodBloc,
             builder: (context, state) {
               if (state is FoodLoadingState) {
-                return const LoadingWidget();
+                return GridView.builder(
+                  gridDelegate: AppGridDelegate.foodItems,
+                  itemBuilder: (context, index) => const LoadingWidget(),
+                  itemCount: 4,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                );
               } else if (state is FoodErrorState) {
                 return Center(
                   child: Text(state.message),

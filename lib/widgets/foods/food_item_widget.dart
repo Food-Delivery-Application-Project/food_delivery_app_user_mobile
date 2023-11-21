@@ -55,8 +55,8 @@ class FoodItem extends StatelessWidget {
                         backgroundColor: AppColors.white,
                         radius: 15,
                         child: Icon(
-                          Ionicons.cart,
-                          color: AppColors.primary,
+                          Ionicons.heart,
+                          color: AppColors.red,
                           size: 20,
                           shadows: [
                             Shadow(

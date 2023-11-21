@@ -1,5 +1,6 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
@@ -46,13 +47,8 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
           onPressed: () {},
           elevation: 2,
           backgroundColor: AppColors.darkBlack,
-          // make it circular
           shape: const CircleBorder(),
-
-          child: const Icon(
-            Icons.add,
-            color: AppColors.white,
-          ),
+          child: Image.asset(AppImages.logoTrans),
           //params
         ),
       ),
@@ -66,7 +62,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
         activeColor: AppColors.primary,
         inactiveColor: AppColors.white,
         backgroundColor: AppColors.darkBlack,
-        notchSmoothness: NotchSmoothness.softEdge,
+        notchSmoothness: NotchSmoothness.verySmoothEdge,
         leftCornerRadius: 32,
         rightCornerRadius: 32,
         onTap: (index) => setState(() => _bottomNavIndex = index),

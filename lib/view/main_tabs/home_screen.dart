@@ -20,34 +20,30 @@ class HomeScreen extends StatelessWidget {
       onRefresh: () async {
         context.read<AllCategoriesBloc>().add(GetAllCategoriesEvent());
       },
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Categories",
-                    style: AppTextStyle.headings,
-                  ),
-                  10.height,
-                  const FoodCategories(),
-                  20.height,
-                  const AppDivider(),
-                  20.height,
-                  // Favorites
-                  const HeadingWidget(
-                    headingText: "Favorites",
-                    isViewAll: true,
-                  ),
-                  const FavoriteFoods(),
-                  40.height,
-                ],
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Categories",
+                style: AppTextStyle.headings,
               ),
-            ),
-          ],
+              10.height,
+              const FoodCategories(),
+              20.height,
+              const AppDivider(),
+              20.height,
+              // Favorites
+              const HeadingWidget(
+                headingText: "Favorites",
+                isViewAll: true,
+              ),
+              const FavoriteFoods(),
+              40.height,
+            ],
+          ),
         ),
       ),
     );

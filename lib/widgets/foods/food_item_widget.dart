@@ -17,7 +17,7 @@ class FoodItem extends StatelessWidget {
     return GestureDetector(
       child: Column(
         children: [
-          Expanded(
+          Flexible(
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),

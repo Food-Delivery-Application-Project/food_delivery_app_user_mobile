@@ -24,3 +24,10 @@ class FoodErrorState extends FoodState {
   String message;
   FoodErrorState(this.message);
 }
+
+class RandomFoodEvent extends FoodEvent {}
+
+class RandomFoodLoadedState extends FoodState {
+  ApiResponse<List<FoodModel>> food;
+  RandomFoodLoadedState(this.food);
+}

@@ -1,6 +1,9 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
+import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
@@ -8,17 +11,33 @@ import 'package:food_delivery_app/utils/app_grid_delegate.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
+import 'package:food_delivery_app/widgets/foods/food_slider_widget.dart';
 import 'package:food_delivery_app/widgets/shimmer/category_shimmer.dart';
 import 'package:food_delivery_app/widgets/text/heading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  FoodBloc foodBloc = FoodBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    foodBloc.add(RandomFoodEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
         context.read<AllCategoriesBloc>().add(GetAllCategoriesEvent());
+        foodBloc.add(RandomFoodEvent());
       },
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -26,6 +45,8 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              RandomCategoryItemWidget(foodBloc: foodBloc),
+              20.height,
               Text(
                 "Categories",
                 style: AppTextStyle.headings,

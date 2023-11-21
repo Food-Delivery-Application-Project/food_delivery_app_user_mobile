@@ -47,10 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               RandomCategoryItemWidget(foodBloc: foodBloc),
               20.height,
-              Text(
-                "Categories",
-                style: AppTextStyle.headings,
-              ),
+              Text("Categories", style: AppTextStyle.headings),
               10.height,
               const FoodCategories(),
               20.height,

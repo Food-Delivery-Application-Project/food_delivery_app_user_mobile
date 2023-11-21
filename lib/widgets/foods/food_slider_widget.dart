@@ -8,18 +8,30 @@ import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
-class RandomCategoryItemWidget extends StatelessWidget {
+class RandomCategoryItemWidget extends StatefulWidget {
   FoodBloc foodBloc;
-
-  int pageIndex = 0;
 
   RandomCategoryItemWidget({Key? key, required this.foodBloc})
       : super(key: key);
 
   @override
+  State<RandomCategoryItemWidget> createState() =>
+      _RandomCategoryItemWidgetState();
+}
+
+class _RandomCategoryItemWidgetState extends State<RandomCategoryItemWidget> {
+  int pageIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FoodBloc, FoodState>(
-        bloc: foodBloc,
+    return BlocConsumer<FoodBloc, FoodState>(
+        bloc: widget.foodBloc,
+        listener: (context, state) {
+          if (state is RandomFoodLoadedState) {
+            // change the page index
+            pageIndex = state.food.data.length - 1;
+          }
+        },
         builder: (context, state) {
           if (state is RandomFoodLoadedState) {
             return Stack(
@@ -39,7 +51,11 @@ class RandomCategoryItemWidget extends StatelessWidget {
                       autoPlayCurve: Curves.fastOutSlowIn,
                       enlargeCenterPage: true,
                       enlargeFactor: 0.3,
-                      onPageChanged: (index, reason) {},
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          pageIndex = index;
+                        });
+                      },
                       scrollDirection: Axis.horizontal,
                     ),
                     items: state.food.data.map((i) {
@@ -66,14 +82,19 @@ class RandomCategoryItemWidget extends StatelessWidget {
                         },
                       );
                     }).toList()),
+                // add carousel indicator with switching effect
                 Positioned(
                   bottom: 10,
                   right: 10,
                   child: CarouselIndicator(
                     count: state.food.data.length,
                     index: pageIndex,
-                    color: AppColors.darkGrey,
+                    color: AppColors.white,
                     activeColor: AppColors.primary,
+                    height: 10,
+                    width: 10,
+                    space: 5,
+                    cornerRadius: 50,
                   ),
                 ),
               ],
@@ -95,7 +116,6 @@ class RandomCategoryItemWidget extends StatelessWidget {
                   enlargeFactor: 0.3,
                   onPageChanged: (index, reason) {
                     pageIndex = index;
-                    print(pageIndex);
                   },
                   scrollDirection: Axis.horizontal,
                 ),

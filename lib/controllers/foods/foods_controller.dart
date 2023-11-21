@@ -29,4 +29,24 @@ class FoodController {
       throw Exception(jsonDecode(response.body)['message']);
     }
   }
+
+  // Random food items for slider
+  static Future<ApiResponse<List<FoodModel>>> getRandomFoodsForSlider() async {
+    List<FoodModel> list = [];
+
+    const url = "${AppUrl.baseUrl}/get-random-five-fooditem";
+    final response = await ApiManager.getRequest(url);
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final categories = body['data'];
+      list = categories
+          .map<FoodModel>((item) => FoodModel.fromJson(item))
+          .toList();
+
+      return ApiResponse.fromJson(body, (p0) => list);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
 }

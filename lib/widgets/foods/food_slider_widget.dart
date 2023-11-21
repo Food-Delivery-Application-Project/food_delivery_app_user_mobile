@@ -9,10 +9,7 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class RandomCategoryItemWidget extends StatefulWidget {
-  FoodBloc foodBloc;
-
-  RandomCategoryItemWidget({Key? key, required this.foodBloc})
-      : super(key: key);
+  const RandomCategoryItemWidget({Key? key}) : super(key: key);
 
   @override
   State<RandomCategoryItemWidget> createState() =>
@@ -24,83 +21,16 @@ class _RandomCategoryItemWidgetState extends State<RandomCategoryItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<FoodBloc, FoodState>(
-        bloc: widget.foodBloc,
-        listener: (context, state) {
-          if (state is RandomFoodLoadedState) {
-            // change the page index
-            pageIndex = state.food.data.length - 1;
-          }
-        },
-        builder: (context, state) {
-          if (state is RandomFoodLoadedState) {
-            return Stack(
-              children: [
-                CarouselSlider(
-                    options: CarouselOptions(
-                      height: 200,
-                      aspectRatio: 16 / 9,
-                      viewportFraction: 1,
-                      initialPage: 0,
-                      enableInfiniteScroll: true,
-                      reverse: false,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 3),
-                      autoPlayAnimationDuration:
-                          const Duration(milliseconds: 800),
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enlargeCenterPage: true,
-                      enlargeFactor: 0.3,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          pageIndex = index;
-                        });
-                      },
-                      scrollDirection: Axis.horizontal,
-                    ),
-                    items: state.food.data.map((i) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            // margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: CachedNetworkImage(
-                              imageUrl: i.image!,
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        },
-                      );
-                    }).toList()),
-                // add carousel indicator with switching effect
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: CarouselIndicator(
-                    count: state.food.data.length,
-                    index: pageIndex,
-                    color: AppColors.white,
-                    activeColor: AppColors.primary,
-                    height: 10,
-                    width: 10,
-                    space: 5,
-                    cornerRadius: 50,
-                  ),
-                ),
-              ],
-            );
-          } else if (state is FoodLoadingState) {
-            return CarouselSlider(
+    return BlocConsumer<FoodBloc, FoodState>(listener: (context, state) {
+      if (state is RandomFoodLoadedState) {
+        // change the page index
+        pageIndex = state.food.data.length - 1;
+      }
+    }, builder: (context, state) {
+      if (state is RandomFoodLoadedState) {
+        return Stack(
+          children: [
+            CarouselSlider(
                 options: CarouselOptions(
                   height: 200,
                   aspectRatio: 16 / 9,
@@ -115,42 +45,104 @@ class _RandomCategoryItemWidgetState extends State<RandomCategoryItemWidget> {
                   enlargeCenterPage: true,
                   enlargeFactor: 0.3,
                   onPageChanged: (index, reason) {
-                    pageIndex = index;
+                    setState(() {
+                      pageIndex = index;
+                    });
                   },
                   scrollDirection: Axis.horizontal,
                 ),
-                items: List.generate(3, (index) {
+                items: state.food.data.map((i) {
                   return Builder(
                     builder: (BuildContext context) {
                       return SizedBox(
                         width: MediaQuery.of(context).size.width,
                         // margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Shimmer(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.darkGrey.withOpacity(0.3),
-                              AppColors.lightGrey,
-                              AppColors.darkGrey.withOpacity(0.3),
-                            ],
-                            begin: const Alignment(-1.0, -0.5),
-                            end: const Alignment(1.0, 0.5),
-                          ),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            // margin:
-                            //     const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: CachedNetworkImage(
+                          imageUrl: i.image!,
+                          imageBuilder: (context, imageProvider) => Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
+                          fit: BoxFit.cover,
                         ),
                       );
                     },
                   );
-                }).toList());
-          } else {
-            return Container();
-          }
-        });
+                }).toList()),
+            // add carousel indicator with switching effect
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: CarouselIndicator(
+                count: state.food.data.length,
+                index: pageIndex,
+                color: AppColors.white,
+                activeColor: AppColors.primary,
+                height: 10,
+                width: 10,
+                space: 5,
+                cornerRadius: 50,
+              ),
+            ),
+          ],
+        );
+      } else if (state is FoodLoadingState) {
+        return CarouselSlider(
+            options: CarouselOptions(
+              height: 200,
+              aspectRatio: 16 / 9,
+              viewportFraction: 1,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              reverse: false,
+              autoPlay: true,
+              autoPlayInterval: const Duration(seconds: 3),
+              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
+              enlargeFactor: 0.3,
+              onPageChanged: (index, reason) {
+                pageIndex = index;
+              },
+              scrollDirection: Axis.horizontal,
+            ),
+            items: List.generate(3, (index) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    // margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Shimmer(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.darkGrey.withOpacity(0.3),
+                          AppColors.lightGrey,
+                          AppColors.darkGrey.withOpacity(0.3),
+                        ],
+                        begin: const Alignment(-1.0, -0.5),
+                        end: const Alignment(1.0, 0.5),
+                      ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        // margin:
+                        //     const EdgeInsets.symmetric(horizontal: 5.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }).toList());
+      } else {
+        return Container();
+      }
+    });
   }
 }

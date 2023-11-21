@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
+import 'package:food_delivery_app/view/main_tabs/profile_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
 
 class MainTabsScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
     const HomeScreen(),
     Container(),
     Container(),
-    Container(),
+    const ProfileScreen(),
   ];
 
   var _bottomNavIndex = 0;

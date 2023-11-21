@@ -24,12 +24,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  FoodBloc foodBloc = FoodBloc();
-
   @override
   void initState() {
     super.initState();
-    foodBloc.add(RandomFoodEvent());
   }
 
   @override
@@ -37,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return RefreshIndicator(
       onRefresh: () async {
         context.read<AllCategoriesBloc>().add(GetAllCategoriesEvent());
-        foodBloc.add(RandomFoodEvent());
+        context.read<FoodBloc>().add(RandomFoodEvent());
       },
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -45,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RandomCategoryItemWidget(foodBloc: foodBloc),
+              const RandomCategoryItemWidget(),
               20.height,
               Text("Categories", style: AppTextStyle.headings),
               10.height,

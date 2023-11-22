@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 class AppValidators {
   static var email = (String? value) {
     if (value!.isEmpty) {

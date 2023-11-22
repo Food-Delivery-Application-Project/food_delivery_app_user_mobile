@@ -1,16 +1,37 @@
+// ignore_for_file: avoid_print
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-class FoodItem extends StatelessWidget {
+class FoodItem extends StatefulWidget {
   final FoodModel foodModel;
   const FoodItem({Key? key, required this.foodModel}) : super(key: key);
+
+  @override
+  State<FoodItem> createState() => _FoodItemState();
+}
+
+class _FoodItemState extends State<FoodItem> {
+  String? userId;
+
+  WishlistBloc wishlistBloc = WishlistBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    UserSecureStorage.fetchUserId().then((value) {
+      userId = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +65,23 @@ class FoodItem extends StatelessWidget {
                   child: GridTileBar(
                     leading: const SizedBox.shrink(),
                     title: AutoSizeText(
-                      foodModel.foodName.toString(),
+                      widget.foodModel.foodName.toString(),
                       style: AppTextStyle.foodItemName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     trailing: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        print("user ID: $userId");
+                        print("food ID: ${widget.foodModel.sId}");
+
+                        wishlistBloc.add(
+                          WishlistAddOrRemoveEvent(
+                            userId: userId.toString(),
+                            foodId: widget.foodModel.sId.toString(),
+                          ),
+                        );
+                      },
                       icon: const CircleAvatar(
                         backgroundColor: AppColors.white,
                         radius: 15,
@@ -83,7 +114,7 @@ class FoodItem extends StatelessWidget {
                     // ),
                   ),
                   child: Image.network(
-                    foodModel.image.toString(),
+                    widget.foodModel.image.toString(),
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
                         Image.asset(AppImages.logo),
@@ -100,7 +131,7 @@ class FoodItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AutoSizeText(
-                  foodModel.description.toString(),
+                  widget.foodModel.description.toString(),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -108,7 +139,7 @@ class FoodItem extends StatelessWidget {
                 Row(
                   children: [
                     AutoSizeText(
-                      "PKR: ${foodModel.price}",
+                      "PKR: ${widget.foodModel.price}",
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: AppColors.primary,

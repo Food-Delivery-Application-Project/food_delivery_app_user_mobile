@@ -11,7 +11,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     on<SessionRefreshEvent>((event, emit) async {
       emit(SessionLoadingState());
       try {
-        emit(SessionLoadingState());
         var networkStatus = await isNetworkAvailable();
         if (!networkStatus) {
           emit(SessionErrorState(message: "No Internet Connection"));

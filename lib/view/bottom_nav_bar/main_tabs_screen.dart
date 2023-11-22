@@ -2,6 +2,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
+import 'package:food_delivery_app/view/main_tabs/fovorite_screen.dart';
 import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
 import 'package:food_delivery_app/view/main_tabs/profile_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/basic_appbar_widget.dart';
@@ -17,14 +18,14 @@ class MainTabsScreen extends StatefulWidget {
 class _MainTabsScreenState extends State<MainTabsScreen> {
   final iconList = <IconData>[
     Icons.home,
-    Icons.search,
+    Icons.favorite,
     Icons.shopping_cart,
     Icons.person,
   ];
 
   final screens = <Widget>[
     const HomeScreen(),
-    Container(),
+    const FovoriteScreen(),
     Container(),
     const ProfileScreen(),
   ];
@@ -34,7 +35,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const BasicAppbarWidget(
-        title: "habibi",
+        title: "Habibi",
         isBackButton: false,
       ),
       body: screens[_bottomNavIndex], //destination screen

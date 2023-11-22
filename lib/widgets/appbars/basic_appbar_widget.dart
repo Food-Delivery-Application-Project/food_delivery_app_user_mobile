@@ -20,6 +20,7 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.white,
+      elevation: 0,
       title: Text(
         title.toUpperCase(),
         style: AppTextStyle.headings.copyWith(fontFamily: AppFonts.poppins),

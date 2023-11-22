@@ -44,8 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const RandomCategoryItemWidget(),
               20.height,
-              Text("Categories", style: AppTextStyle.headings),
-              10.height,
               const FoodCategories(),
               20.height,
               const AppDivider(),
@@ -78,12 +76,21 @@ class FoodCategories extends StatelessWidget {
         } else if (state is AllCategoriesErrorState) {
           return Text(state.message);
         } else if (state is AllCategoriesLoadedState) {
-          return AppBuilders.categories(
-            (context, index) => CategoryWidget(
-              category: state.categories.data[index],
-            ),
-            state.categories.data.length,
-          );
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Categories", style: AppTextStyle.headings),
+              10.height,
+              AppBuilders.categories(
+                (context, index) {
+                  return CategoryWidget(
+                    category: state.categories.data[index],
+                  ).visible(state.categories.data.isNotEmpty);
+                },
+                state.categories.data.length,
+              ),
+            ],
+          ).visible(state.categories.data.isNotEmpty);
         } else {
           return Container();
         }

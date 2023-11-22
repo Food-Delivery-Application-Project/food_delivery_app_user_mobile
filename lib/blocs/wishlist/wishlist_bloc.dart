@@ -44,5 +44,25 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
         emit(WishlistErrorState(message: error.toString()));
       }
     });
+
+    // Get more wishlist foods
+    on<WishlistGetMoreDataEvent>((event, emit) async {
+      try {
+        emit(WishlistGetMoreLoadingState());
+        bool networkStatus = await isNetworkAvailable();
+        if (networkStatus) {
+          final foods = await WishlistController.getWishlistFoods(
+            event.userId,
+            page: event.page,
+            paginatedBy: event.paginatedBy,
+          );
+          emit(WishlistGetMoreLoadedState(foods: foods));
+        } else {
+          emit(WishlistErrorState(message: "No Internet Connection"));
+        }
+      } catch (error) {
+        emit(WishlistErrorState(message: error.toString()));
+      }
+    });
   }
 }

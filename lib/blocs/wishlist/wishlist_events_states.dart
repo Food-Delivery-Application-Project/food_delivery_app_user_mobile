@@ -14,6 +14,13 @@ class WishlistGetInitialDataEvent extends WishlistEvent {
       {required this.userId, required this.page, required this.paginatedBy});
 }
 
+class WishlistGetMoreDataEvent extends WishlistEvent {
+  final String userId;
+  final int page, paginatedBy;
+  WishlistGetMoreDataEvent(
+      {required this.userId, required this.page, required this.paginatedBy});
+}
+
 abstract class WishlistState {}
 
 class WishlistInitialState extends WishlistState {}
@@ -29,6 +36,8 @@ class WishlistErrorState extends WishlistState {
 
 // get wishlisted foods
 class WishlistInitalLoadingState extends WishlistState {}
+
+class WishlistGetMoreLoadingState extends WishlistState {}
 
 class WishlistInitialLoadedState extends WishlistState {
   final ApiResponse<List<FoodModel>> foods;

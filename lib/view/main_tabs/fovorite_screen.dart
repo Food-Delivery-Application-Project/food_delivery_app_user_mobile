@@ -1,11 +1,9 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:food_delivery_app/constants/app_text_style.dart';
-import 'package:food_delivery_app/global/assets/app_assets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:nb_utils/nb_utils.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 
 class FovoriteScreen extends StatefulWidget {
   const FovoriteScreen({super.key});
@@ -15,6 +13,21 @@ class FovoriteScreen extends StatefulWidget {
 }
 
 class _FovoriteScreenState extends State<FovoriteScreen> {
+  WishlistBloc wishlistBloc = WishlistBloc();
+
+  @override
+  void initState() {
+    UserSecureStorage.fetchUserId().then((value) {
+      wishlistBloc.add(WishlistGetInitialDataEvent(
+        userId: value.toString(),
+        page: 1,
+        paginatedBy: 10,
+      ));
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,168 +39,40 @@ class _FovoriteScreenState extends State<FovoriteScreen> {
           horizontal: 20,
           vertical: 10,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 0,
-                ),
-                itemBuilder: (context, index) {
-                  return const FavoriteItem();
-                },
-                itemCount: 6,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class FavoriteItem extends StatelessWidget {
-  const FavoriteItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Column(
-        children: [
-          Flexible(
-            child: Container(
-              // height: 150,
-              height: MediaQuery.of(context).size.height * 0.25,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                shape: BoxShape.rectangle,
-                color: AppColors.grey,
-              ),
-              child: GridTile(
-                header: Container(
-                  // give some gradient color
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.darkBackground,
-                        AppColors.transparent,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.topRight,
-                    ),
-                  ),
-                  child: GridTileBar(
-                    leading: const SizedBox.shrink(),
-                    title: AutoSizeText(
-                      "Food Name",
-                      style: AppTextStyle.foodItemName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: const CircleAvatar(
-                        backgroundColor: AppColors.white,
-                        radius: 15,
-                        child: Icon(
-                          Ionicons.heart,
-                          color: AppColors.red,
-                          size: 20,
-                          shadows: [
-                            Shadow(
-                              color: AppColors.black,
-                              blurRadius: 1,
-                              offset: Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    shape: BoxShape.rectangle,
-                    color: AppColors.grey,
-                    // image: DecorationImage(
-                    //   image: const AssetImage(AppImages.logo),
-                    //   fit: BoxFit.cover,
-                    //   onError: (exception, stackTrace) =>
-                    //       const SizedBox.shrink(),
-                    // ),
-                  ),
-                  child: Image.network(
-                    "",
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Image.asset(AppImages.logo),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 5),
-          Container(
-            width: context.width(),
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AutoSizeText(
-                  "Description",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 5),
-                Row(
+        child: BlocConsumer<WishlistBloc, WishlistState>(
+          bloc: wishlistBloc,
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            if (state is WishlistInitialLoadedState) {
+              return SingleChildScrollView(
+                child: Column(
                   children: [
-                    AutoSizeText(
-                      "PKR: 100",
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w500,
-                        // delete the text
+                    GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.8,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 20,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        const Icon(
-                          Ionicons.star,
-                          color: AppColors.primary,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 5),
-                        AutoSizeText(
-                          "5",
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                      itemBuilder: (context, index) {
+                        return FoodItem(foodModel: state.foods.data[index]);
+                      },
+                      itemCount: state.foods.data.length,
+                      shrinkWrap: true,
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
       ),
     );
   }

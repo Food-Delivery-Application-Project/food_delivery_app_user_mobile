@@ -1,14 +1,12 @@
-// ignore_for_file: avoid_print
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
-import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
+import 'package:food_delivery_app/view/foods/food_details_screen.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -22,97 +20,123 @@ class FoodItem extends StatefulWidget {
 
 class _FoodItemState extends State<FoodItem> {
   String? userId;
+  // bool isFavorite = false;
+  // WishlistBloc wishlistBloc = WishlistBloc();
 
-  WishlistBloc wishlistBloc = WishlistBloc();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   UserSecureStorage.fetchUserId().then((value) {
+  //     userId = value;
+  //     checkFavoriteStatus();
+  //   });
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    UserSecureStorage.fetchUserId().then((value) {
-      userId = value;
-    });
-  }
+  // checkFavoriteStatus() {
+  //   wishlistBloc.add(
+  //     WishlistIsfavoriteEvent(
+  //       userId: userId.toString(),
+  //       foodId: widget.foodModel.sId.toString(),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        AppNavigator.goToPage(
+          context: context,
+          screen: FoodDetailsScreen(food: widget.foodModel),
+        );
+      },
       child: Column(
         children: [
           Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                shape: BoxShape.rectangle,
-                color: AppColors.grey,
-              ),
-              child: GridTile(
-                header: Container(
-                  // give some gradient color
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.darkBackground,
-                        AppColors.transparent,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.topRight,
-                    ),
+            child: GridTile(
+              header: Container(
+                // give some gradient color
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
                   ),
-                  child: GridTileBar(
-                    leading: const SizedBox.shrink(),
-                    title: AutoSizeText(
-                      widget.foodModel.foodName.toString(),
-                      style: AppTextStyle.foodItemName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: IconButton(
-                      onPressed: () {
-                        print("user ID: $userId");
-                        print("food ID: ${widget.foodModel.sId}");
-
-                        wishlistBloc.add(
-                          WishlistAddOrRemoveEvent(
-                            userId: userId.toString(),
-                            foodId: widget.foodModel.sId.toString(),
-                          ),
-                        );
-                      },
-                      icon: const CircleAvatar(
-                        backgroundColor: AppColors.white,
-                        radius: 15,
-                        child: Icon(
-                          Ionicons.heart,
-                          color: AppColors.red,
-                          size: 20,
-                          shadows: [
-                            Shadow(
-                              color: AppColors.black,
-                              blurRadius: 1,
-                              offset: Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.darkBackground,
+                      AppColors.transparent,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.topRight,
                   ),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    shape: BoxShape.rectangle,
-                    color: AppColors.grey,
-                    // image: DecorationImage(
-                    //   image: const AssetImage(AppImages.logo),
-                    //   fit: BoxFit.cover,
-                    //   onError: (exception, stackTrace) =>
-                    //       const SizedBox.shrink(),
-                    // ),
+                child: GridTileBar(
+                  title: AutoSizeText(
+                    widget.foodModel.foodName.toString(),
+                    style: AppTextStyle.foodItemName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  // trailing: IconButton(
+                  //   onPressed: () {
+                  //     wishlistBloc.add(
+                  //       WishlistAddOrRemoveEvent(
+                  //         userId: userId.toString(),
+                  //         foodId: widget.foodModel.sId.toString(),
+                  //       ),
+                  //     );
+                  //     // update is favorite
+                  //     wishlistBloc.add(
+                  //       WishlistIsfavoriteEvent(
+                  //         userId: userId.toString(),
+                  //         foodId: widget.foodModel.sId.toString(),
+                  //       ),
+                  //     );
+                  //   },
+                  //   icon: BlocConsumer<WishlistBloc, WishlistState>(
+                  //     bloc: wishlistBloc,
+                  //     listener: (context, state) {
+                  //       if (state is WishlistIsFavoriteFoodState) {
+                  //         isFavorite = state.isFavorite;
+                  //       } else if (state is WishlistLoadingState) {
+                  //         isFavorite = !isFavorite;
+                  //       } else if (state is WishlistErrorState) {
+                  //         isFavorite = !isFavorite;
+                  //       }
+                  //     },
+                  //     builder: (context, state) {
+                  //       return CircleAvatar(
+                  //         backgroundColor: AppColors.white,
+                  //         radius: 15,
+                  //         child: Icon(
+                  //           // do not apply isFavorite on every item in the grid view
+                  //           isFavorite
+                  //               ? Ionicons.heart
+                  //               : Ionicons.heart_outline,
+                  //           color: AppColors.red,
+                  //           size: 20,
+                  //           shadows: const [
+                  //             Shadow(
+                  //               color: AppColors.black,
+                  //               blurRadius: 1,
+                  //               offset: Offset(0, 1),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  shape: BoxShape.rectangle,
+                  color: AppColors.grey,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     widget.foodModel.image.toString(),
                     fit: BoxFit.cover,

@@ -21,13 +21,21 @@ class WishlistGetMoreDataEvent extends WishlistEvent {
       {required this.userId, required this.page, required this.paginatedBy});
 }
 
+class WishlistIsfavoriteEvent extends WishlistEvent {
+  final String userId, foodId;
+  WishlistIsfavoriteEvent({required this.userId, required this.foodId});
+}
+
 abstract class WishlistState {}
 
 class WishlistInitialState extends WishlistState {}
 
 class WishlistLoadingState extends WishlistState {}
 
-class WishlistLoadedState extends WishlistState {}
+class WishlistAddOrRemoveSuccessState extends WishlistState {
+  final ApiResponse response;
+  WishlistAddOrRemoveSuccessState({required this.response});
+}
 
 class WishlistErrorState extends WishlistState {
   final String message;
@@ -52,4 +60,10 @@ class WishlistGetMoreLoadedState extends WishlistState {
 class WishlistInitialErrorState extends WishlistState {
   final String message;
   WishlistInitialErrorState({required this.message});
+}
+
+// Is favorite food
+class WishlistIsFavoriteFoodState extends WishlistState {
+  final bool isFavorite;
+  WishlistIsFavoriteFoodState({required this.isFavorite});
 }

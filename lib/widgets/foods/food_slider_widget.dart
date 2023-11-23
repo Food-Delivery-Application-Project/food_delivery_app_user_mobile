@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
+import 'package:food_delivery_app/view/foods/food_details_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
@@ -51,24 +53,32 @@ class _RandomCategoryItemWidgetState extends State<RandomCategoryItemWidget> {
                   },
                   scrollDirection: Axis.horizontal,
                 ),
-                items: state.food.data.map((i) {
+                items: state.food.data.map((foodItemModel) {
                   return Builder(
                     builder: (BuildContext context) {
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        // margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: CachedNetworkImage(
-                          imageUrl: i.image!,
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
+                      return GestureDetector(
+                        onTap: () {
+                          AppNavigator.goToPage(
+                            context: context,
+                            screen: FoodDetailsScreen(food: foodItemModel),
+                          );
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          // margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: CachedNetworkImage(
+                            imageUrl: foodItemModel.image!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
                       );
                     },

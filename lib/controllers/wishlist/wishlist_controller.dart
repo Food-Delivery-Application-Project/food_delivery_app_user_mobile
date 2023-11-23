@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:food_delivery_app/constants/app_url.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
+import 'package:food_delivery_app/models/wishlist/is_favorite_model.dart';
 import 'package:food_delivery_app/utils/api_manager.dart';
 
 class WishlistController {
@@ -18,9 +19,9 @@ class WishlistController {
         "Content-Type": "application/json",
       },
     );
-
     print(response.body);
-
+    print("food id" + foodId);
+    print("user id" + userId);
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
       return ApiResponse.fromJson(body, (p0) => null);
@@ -36,15 +37,32 @@ class WishlistController {
         "${AppUrl.baseUrl}/get-food-item-to-wishlist/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
 
-    print(response.body);
-
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final List<FoodModel> foods = [];
       body['data'].forEach((food) {
         foods.add(FoodModel.fromJson(food));
       });
       return ApiResponse.fromJson(body, (p0) => foods);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
+  static Future<ApiResponse<IsFavoriteModel>> isFavorite(
+    String userId,
+    String foodId,
+  ) async {
+    final url =
+        "${AppUrl.baseUrl}/get-foodid-to-wishlist/?userId=$userId&foodId=$foodId";
+    final response = await ApiManager.getRequest(url);
+    print(response.body);
+    print("user id " + userId);
+    print("food id " + foodId);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      final isFavoriteModel = IsFavoriteModel.fromJson(body['data']);
+      return ApiResponse.fromJson(body, (p0) => isFavoriteModel);
     } else {
       throw Exception(jsonDecode(response.body)['message']);
     }

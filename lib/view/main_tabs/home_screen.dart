@@ -2,12 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
+import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
-import 'package:food_delivery_app/utils/app_grid_delegate.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
@@ -25,11 +27,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
@@ -46,13 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
               20.height,
               const FoodCategories(),
               20.height,
-              const AppDivider(),
-              20.height,
               // Favorites
-              const HeadingWidget(
-                headingText: "Favorites",
-                isViewAll: true,
-              ),
+
               const FavoriteFoods(),
               40.height,
             ],
@@ -71,8 +63,21 @@ class FoodCategories extends StatelessWidget {
     return BlocBuilder<AllCategoriesBloc, AllCategoriesState>(
       builder: (context, state) {
         if (state is AllCategoriesLoadingState) {
-          return AppBuilders.categories(
-              (context, index) => const CategoryShimmer(), 4);
+          return SizedBox(
+            height: 200,
+            child: AppBuilders.categories(
+                (context, index) => Container(
+                      margin: const EdgeInsets.only(right: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const AspectRatio(
+                        aspectRatio: 1,
+                        child: CategoryShimmer(),
+                      ),
+                    ),
+                4),
+          );
         } else if (state is AllCategoriesErrorState) {
           return Text(state.message);
         } else if (state is AllCategoriesLoadedState) {
@@ -81,14 +86,25 @@ class FoodCategories extends StatelessWidget {
             children: [
               Text("Categories", style: AppTextStyle.headings),
               10.height,
-              AppBuilders.categories(
-                (context, index) {
-                  return CategoryWidget(
-                    category: state.categories.data[index],
-                  ).visible(state.categories.data.isNotEmpty);
-                },
-                state.categories.data.length,
+              SizedBox(
+                height: 200.h,
+                child: AppBuilders.categories((ctx, index) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: CategoryWidget(
+                        category: state.categories.data[index],
+                      ),
+                    ),
+                  );
+                }, state.categories.data.length),
               ),
+              20.height,
+              const AppDivider(),
             ],
           ).visible(state.categories.data.isNotEmpty);
         } else {
@@ -99,16 +115,76 @@ class FoodCategories extends StatelessWidget {
   }
 }
 
-class FavoriteFoods extends StatelessWidget {
+class FavoriteFoods extends StatefulWidget {
   const FavoriteFoods({Key? key}) : super(key: key);
+
+  @override
+  State<FavoriteFoods> createState() => _FavoriteFoodsState();
+}
+
+class _FavoriteFoodsState extends State<FavoriteFoods> {
+  WishlistBloc wishlistBloc = WishlistBloc();
+
+  // Wishlist pagination
+  int wishlistPage = 1;
+  int wishlistPaginatedBy = 2;
+
+  final List<FoodModel> foods = [];
+
+  @override
+  void initState() {
+    super.initState();
+    wishlistGetInitialData();
+  }
+
+  wishlistGetInitialData() {
+    UserSecureStorage.fetchUserId().then((value) {
+      wishlistBloc.add(WishlistGetInitialDataEvent(
+        userId: value.toString(),
+        page: wishlistPage,
+        paginatedBy: wishlistPaginatedBy,
+      ));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: AppGridDelegate.foodItems,
-      itemBuilder: (context, index) => FoodItem(foodModel: FoodModel()),
-      itemCount: 4,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return BlocConsumer<WishlistBloc, WishlistState>(
+      bloc: wishlistBloc,
+      listener: (context, state) {
+        if (state is WishlistInitialLoadedState) {
+          foods.addAll(state.foods.data);
+        }
+      },
+      builder: (context, state) {
+        return Column(
+          children: [
+            const HeadingWidget(
+              headingText: "Favorites",
+              isViewAll: true,
+            ),
+            10.height,
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: foods.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 20),
+                    child: AspectRatio(
+                      aspectRatio: 0.8,
+                      child: FoodItem(
+                        foodModel: foods[index],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ).visible(foods.isNotEmpty);
+      },
     );
   }
 }

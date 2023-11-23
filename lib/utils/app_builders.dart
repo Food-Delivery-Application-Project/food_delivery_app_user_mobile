@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/utils/app_grid_delegate.dart';
 
 class AppBuilders {
-  static GridView categories(
-      Widget? Function(BuildContext, int) builder, int itemCount) {
-    return GridView.builder(
-      gridDelegate: AppGridDelegate.categories,
-      itemBuilder: builder,
+  static ListView categories(
+      Widget? Function(BuildContext, int) itemBuilder, int itemCount) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
       itemCount: itemCount,
+      itemBuilder: itemBuilder,
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
     );
   }
 }

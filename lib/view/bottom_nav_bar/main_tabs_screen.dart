@@ -2,6 +2,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
+import 'package:food_delivery_app/view/main_tabs/cart_screen.dart';
 import 'package:food_delivery_app/view/main_tabs/fovorite_screen.dart';
 import 'package:food_delivery_app/view/main_tabs/home_screen.dart';
 import 'package:food_delivery_app/view/main_tabs/profile_screen.dart';
@@ -26,7 +27,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
   final screens = <Widget>[
     const HomeScreen(),
     const FovoriteScreen(),
-    Container(),
+    CartScreen(),
     const ProfileScreen(),
   ];
 

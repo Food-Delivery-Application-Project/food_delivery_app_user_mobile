@@ -8,6 +8,8 @@ import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_snackbars.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
+import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
+import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -22,6 +24,7 @@ class FoodDetailsScreen extends StatefulWidget {
 class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   String? userId;
   bool isFavorite = false;
+  bool? isLoading;
   WishlistBloc wishlistBloc = WishlistBloc();
 
   @override
@@ -52,13 +55,23 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BackAppbarWidget(title: widget.food.foodName),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: PrimaryButtonWidget(
+          caption: "Add to cart",
+          onPressed: () {},
+        ),
+      ),
       body: SingleChildScrollView(
         child: BlocConsumer<WishlistBloc, WishlistState>(
           bloc: wishlistBloc,
           listener: (context, state) {
             if (state is WishlistLoadingState) {
               isFavorite = !isFavorite;
+            } else if (state is WishlistIsFavoriteFoodLoadingState) {
+              isLoading = true;
             } else if (state is WishlistIsFavoriteFoodState) {
+              isLoading = false;
               isFavorite = state.isFavorite;
             } else if (state is WishlistAddOrRemoveSuccessState) {
               AppSnackbars.normal(context, state.response.message);
@@ -86,52 +99,53 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                             style: AppTextStyle.headings,
                             textAlign: TextAlign.left,
                           ),
-                          IconButton(
-                            onPressed: () {
-                              wishlistBloc.add(
-                                WishlistAddOrRemoveEvent(
-                                  userId: userId.toString(),
-                                  foodId: widget.food.sId.toString(),
-                                ),
-                              );
-                            },
-                            icon: CircleAvatar(
-                              backgroundColor: AppColors.white,
-                              radius: 15,
-                              child: Icon(
-                                // do not apply isFavorite on every item in the grid view
-                                isFavorite == true
-                                    ? Ionicons.heart
-                                    : Ionicons.heart_outline,
-                                color: AppColors.red,
-                                size: 20,
-                                shadows: const [
-                                  Shadow(
-                                    color: AppColors.black,
-                                    blurRadius: 1,
-                                    offset: Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
+                          isLoading == true
+                              ? const LoadingWidget()
+                              : Row(
+                                  children: [
+                                    Text(
+                                      isFavorite == true
+                                          ? "Favorite"
+                                          : "Add to wishlist",
+                                      style: AppTextStyle.subHeading
+                                          .copyWith(color: AppColors.red),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        wishlistBloc.add(
+                                          WishlistAddOrRemoveEvent(
+                                            userId: userId.toString(),
+                                            foodId: widget.food.sId.toString(),
+                                          ),
+                                        );
+                                      },
+                                      icon: CircleAvatar(
+                                        backgroundColor: AppColors.white,
+                                        radius: 15,
+                                        child: Icon(
+                                          // do not apply isFavorite on every item in the grid view
+                                          isFavorite == true
+                                              ? Ionicons.heart
+                                              : Ionicons.heart_outline,
+                                          color: AppColors.red,
+                                          size: 20,
+                                          shadows: const [
+                                            Shadow(
+                                              color: AppColors.black,
+                                              blurRadius: 1,
+                                              offset: Offset(0, 1),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
                         ],
                       ),
                       10.height,
                       Text(
                         widget.food.description.toString(),
-                        style: AppTextStyle.subHeading,
-                        textAlign: TextAlign.left,
-                      ),
-                      10.height,
-                      Text(
-                        'food id: ${widget.food.sId.toString()}',
-                        style: AppTextStyle.subHeading,
-                        textAlign: TextAlign.left,
-                      ),
-                      10.height,
-                      Text(
-                        'user id: ${userId.toString()}',
                         style: AppTextStyle.subHeading,
                         textAlign: TextAlign.left,
                       ),

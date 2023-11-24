@@ -54,7 +54,7 @@ class WishlistController {
     final url =
         "${AppUrl.baseUrl}/get-foodid-to-wishlist/?userId=$userId&foodId=$foodId";
     final response = await ApiManager.getRequest(url);
-
+    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final isFavoriteModel = IsFavoriteModel.fromJson(body['data']);

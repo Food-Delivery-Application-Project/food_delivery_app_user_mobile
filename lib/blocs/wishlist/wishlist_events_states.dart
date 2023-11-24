@@ -63,6 +63,8 @@ class WishlistInitialErrorState extends WishlistState {
 }
 
 // Is favorite food
+class WishlistIsFavoriteFoodLoadingState extends WishlistState {}
+
 class WishlistIsFavoriteFoodState extends WishlistState {
   final bool isFavorite;
   WishlistIsFavoriteFoodState({required this.isFavorite});

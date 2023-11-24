@@ -57,14 +57,20 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
       actions: [
-        GestureDetector(
-          onTap: () {},
-          child: Padding(
-            padding: EdgeInsets.all(8.w),
-            child: Icon(
-              LineIcons.search,
-              size: 30.sp,
-            ),
+        IconButton(
+          onPressed: () {},
+          icon: Icon(
+            // icon for notifications
+            Ionicons.search_outline,
+            size: 30.sp,
+          ),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: Icon(
+            // icon for orders
+            Ionicons.bag_handle_outline,
+            size: 30.sp,
           ),
         ),
       ],

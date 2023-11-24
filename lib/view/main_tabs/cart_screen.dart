@@ -2,8 +2,16 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
+import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
+import 'package:food_delivery_app/models/food/food_model.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
+import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class CartScreen extends StatefulWidget {
   @override
@@ -11,6 +19,36 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  // Blocs
+  CartBloc cartBloc = CartBloc();
+
+  // Pagination
+  int page = 1;
+  int paginatedBy = 10;
+
+  // Lists
+  List<FoodModel> foodList = [];
+  List foodQuanty = [];
+
+  @override
+  void initState() {
+    initInitialBloc();
+    super.initState();
+  }
+
+  initInitialBloc() {
+    UserSecureStorage.fetchUserId().then((value) {
+      cartBloc.add(
+        CartGetInitialDataEvent(
+          userId: value.toString(),
+          page: page,
+          paginatedBy: paginatedBy,
+        ),
+      );
+    });
+  }
+
+  initGetMoreDataBloc() {}
   final List<Map<String, dynamic>> cartItems = [
     {
       'name': 'Pizza',
@@ -30,17 +68,38 @@ class _CartScreenState extends State<CartScreen> {
   ];
 
   void _incrementQuantity(int index) {
+    // setState(() {
+    //   cartItems[index]['quantity']++;
+    // });
+    // increment quantity for the food item in the foodQuantity list
     setState(() {
-      cartItems[index]['quantity']++;
+      foodQuanty[index]['quantity']++;
     });
   }
 
   void _decrementQuantity(int index) {
-    if (cartItems[index]['quantity'] > 1) {
+    // if (cartItems[index]['quantity'] > 1) {
+    //   setState(() {
+    //     cartItems[index]['quantity']--;
+    //   });
+    // }
+    // decrement quantity for the food item in the foodQuantity list
+    if (foodQuanty[index]['quantity'] > 1) {
       setState(() {
-        cartItems[index]['quantity']--;
+        foodQuanty[index]['quantity']--;
       });
     }
+  }
+
+  calculateTotalPrice() {
+    double totalPrice = 0;
+
+    // Calculate total price
+    for (var item in cartItems) {
+      totalPrice += item['price'] * item['quantity'];
+    }
+
+    return totalPrice;
   }
 
   @override
@@ -52,108 +111,236 @@ class _CartScreenState extends State<CartScreen> {
       totalPrice += item['price'] * item['quantity'];
     }
 
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: AppColors.white,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Cart Items",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return BlocConsumer<CartBloc, CartState>(
+      bloc: cartBloc,
+      listener: (context, state) {
+        if (state is CartGetInitialDataState) {
+          // set quantity to 1 for all the available items
+          for (var item in state.response.data) {
+            foodQuanty.add({
+              'id': item.sId,
+              'quantity': 1,
+            });
+          }
+        }
+      },
+      builder: (context, state) {
+        if (state is CartInitialLoadingState) {
+          return const Center(
+            child: LoadingWidget(),
+          );
+        } else if (state is CartErrorState) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(state.message),
+
+                // Reload Button
+                20.height,
+                ElevatedButton(
+                  onPressed: () {
+                    initInitialBloc();
+                  },
+                  child: const Text('Reload'),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: cartItems.length + 2, // +2 for items and total price row
-            itemBuilder: (BuildContext context, int index) {
-              if (index < cartItems.length) {
-                return Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    title: Text(
-                      cartItems[index]['name'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Quantity: ${cartItems[index]['quantity']}'),
-                        Text('Price: \$${cartItems[index]['price']}'),
-                      ],
-                    ),
-                    leading: CachedNetworkImage(
-                      imageUrl: cartItems[index]['image'],
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
-                      errorWidget: (context, error, stackTrace) =>
-                          const Icon(Icons.error),
-                      imageBuilder: (context, imageProvider) => Container(
+          );
+        } else if (state is CartGetInitialDataState) {
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.builder(
+                    itemBuilder: (context, index) {
+                      return Container(
                         decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
                           borderRadius: BorderRadius.circular(10.0),
-                          shape: BoxShape.rectangle,
-                          color: Colors.grey,
-                          image: DecorationImage(
-                            image: imageProvider,
+                        ),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: ListTile(
+                          title: Text(
+                            state.response.data[index].foodName.toString(),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Quantity: ${foodQuanty[index]['quantity']}'),
+                              Text(
+                                'Price: ${state.response.data[index].price}',
+                              ),
+                            ],
+                          ),
+                          leading: CachedNetworkImage(
+                            imageUrl:
+                                state.response.data[index].image.toString(),
+                            height: 50,
+                            width: 50,
                             fit: BoxFit.cover,
+                            errorWidget: (context, error, stackTrace) =>
+                                Image.asset(AppImages.logoTrans),
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                shape: BoxShape.rectangle,
+                                color: Colors.grey,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.remove,
+                                  color: AppColors.red,
+                                ),
+                                onPressed: () => _decrementQuantity(index),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: AppColors.success,
+                                ),
+                                onPressed: () => _incrementQuantity(index),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.remove,
-                            color: Colors.red,
-                          ),
-                          onPressed: () => _decrementQuantity(index),
+                      );
+                    },
+                    itemCount: state.response.data.length,
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  )
+                ],
+              ),
+            ),
+          );
+        } else {
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: AppColors.white,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Cart Items",
+                  style: AppTextStyle.headings,
+                ),
+                20.height,
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount:
+                      cartItems.length + 2, // +2 for items and total price row
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index < cartItems.length) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add,
-                            color: Colors.green,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: ListTile(
+                          title: Text(
+                            cartItems[index]['name'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          onPressed: () => _incrementQuantity(index),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Quantity: ${cartItems[index]['quantity']}'),
+                              Text('Price: \$${cartItems[index]['price']}'),
+                            ],
+                          ),
+                          leading: CachedNetworkImage(
+                            imageUrl: cartItems[index]['image'],
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                            errorWidget: (context, error, stackTrace) =>
+                                const Icon(Icons.error),
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                shape: BoxShape.rectangle,
+                                color: Colors.grey,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.remove,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => _decrementQuantity(index),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.green,
+                                ),
+                                onPressed: () => _incrementQuantity(index),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              } else if (index == cartItems.length) {
-                return TotolAmountWidget(
-                  totalPrice: totalPrice,
-                  discount: 0,
-                  deliveryFee: 0,
-                );
-              } else {
-                return const SizedBox(height: 80); // Some padding at the end
-              }
-            },
-          ),
-        ],
-      ),
+                      );
+                    } else if (index == cartItems.length) {
+                      return TotolAmountWidget(
+                        totalPrice: totalPrice,
+                        discount: 0,
+                        deliveryFee: 0,
+                      );
+                    } else {
+                      return const SizedBox(
+                          height: 80); // Some padding at the end
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 }

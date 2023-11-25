@@ -22,7 +22,8 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
           emit(WishlistErrorState(message: "No Internet Connection"));
         }
       } catch (error) {
-        emit(WishlistErrorState(message: error.toString()));
+        emit(WishlistErrorState(
+            message: error.toString().replaceAll("Exception:", "")));
       }
     });
 
@@ -41,7 +42,8 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
           emit(WishlistErrorState(message: "No Internet Connection"));
         }
       } catch (error) {
-        emit(WishlistErrorState(message: error.toString()));
+        emit(WishlistErrorState(
+            message: error.toString().replaceAll("Exception:", "")));
       }
     });
 
@@ -61,7 +63,8 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
           emit(WishlistErrorState(message: "No Internet Connection"));
         }
       } catch (error) {
-        emit(WishlistErrorState(message: error.toString()));
+        emit(WishlistErrorState(
+            message: error.toString().replaceAll("Exception:", "")));
       }
     });
 

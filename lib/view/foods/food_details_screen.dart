@@ -10,6 +10,7 @@ import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_snackbars.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
+import 'package:food_delivery_app/widgets/buttons/outlined_button.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:ionicons/ionicons.dart';
@@ -82,6 +83,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
       bloc: cartBloc,
       listener: (context, state) {
         if (state is CartLoadingState) {
+          isInCart = !isInCart!;
           AppDialogs.loadingDialog(context);
         } else if (state is CartAddToOrRemoveFromState) {
           Navigator.pop(context);
@@ -89,6 +91,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         } else if (state is CartIsInCartState) {
           isInCart = state.response['isFavorite'];
         } else if (state is CartErrorState) {
+          isInCart = !isInCart!;
           Navigator.pop(context);
           AppSnackbars.normal(context, state.message);
         }
@@ -101,13 +104,11 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             child: isInCart == null
                 ? const LoadingWidget()
                 : isInCart == true
-                    ? PrimaryButtonWidget(
+                    ? OutlinedButtonWidget(
                         caption: "Remove from cart",
                         onPressed: () {
                           addToOrRemoveFromCart();
-                        },
-                        color: AppColors.darkBlack,
-                      )
+                        })
                     : PrimaryButtonWidget(
                         caption: "Add to cart",
                         onPressed: () {

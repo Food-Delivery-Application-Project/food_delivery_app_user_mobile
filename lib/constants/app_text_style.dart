@@ -81,7 +81,7 @@ class AppTextStyle {
   );
 
   static var outlinedButtonTextStyle = const TextStyle(
-    color: AppColors.black,
+    color: AppColors.primary,
     fontWeight: FontWeight.bold,
     fontSize: AppPixels.subHeading,
   );

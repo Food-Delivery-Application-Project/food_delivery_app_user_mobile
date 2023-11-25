@@ -432,7 +432,7 @@ class TotolAmountWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.9,
             onPressed: () {},
             caption: "Proceed to payment",
-            color: AppColors.primary,
+            backgroundColor: AppColors.primary,
           ),
         ],
       ),

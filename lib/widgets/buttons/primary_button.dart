@@ -12,7 +12,8 @@ class PrimaryButtonWidget extends StatelessWidget {
     this.height,
     this.margin,
     this.icon,
-    this.color,
+    this.backgroundColor,
+    this.foregroundColor,
   }) : super(key: key);
 
   final String caption;
@@ -20,7 +21,8 @@ class PrimaryButtonWidget extends StatelessWidget {
   final double? width, height;
   final EdgeInsets? margin;
   final IconData? icon;
-  final Color? color;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +32,8 @@ class PrimaryButtonWidget extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: color ?? AppColors.primary,
-          foregroundColor: AppColors.white,
+          backgroundColor: backgroundColor ?? AppColors.primary,
+          foregroundColor: foregroundColor ?? AppColors.white,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
@@ -39,7 +41,11 @@ class PrimaryButtonWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(caption, style: AppTextStyle.whiteButtonTextStyle),
+            Text(
+              caption,
+              style: AppTextStyle.whiteButtonTextStyle
+                  .copyWith(color: foregroundColor),
+            ),
             20.height.visible(icon != null),
             Icon(icon).visible(icon != null),
           ],

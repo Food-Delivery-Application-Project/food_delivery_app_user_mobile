@@ -35,6 +35,8 @@ class WishlistController {
         "${AppUrl.baseUrl}/get-food-item-to-wishlist/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
 
+    print(response.body);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final List<FoodModel> foods = [];
@@ -54,7 +56,6 @@ class WishlistController {
     final url =
         "${AppUrl.baseUrl}/get-foodid-to-wishlist/?userId=$userId&foodId=$foodId";
     final response = await ApiManager.getRequest(url);
-    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final isFavoriteModel = IsFavoriteModel.fromJson(body['data']);

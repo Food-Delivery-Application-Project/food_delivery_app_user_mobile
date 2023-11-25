@@ -8,14 +8,14 @@ import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-class FovoriteScreen extends StatefulWidget {
-  const FovoriteScreen({super.key});
+class WishlistScreen extends StatefulWidget {
+  const WishlistScreen({super.key});
 
   @override
-  State<FovoriteScreen> createState() => _FovoriteScreenState();
+  State<WishlistScreen> createState() => _WishlistScreenState();
 }
 
-class _FovoriteScreenState extends State<FovoriteScreen> {
+class _WishlistScreenState extends State<WishlistScreen> {
   WishlistBloc wishlistBloc = WishlistBloc();
 
   // Scroll controller for pagination
@@ -23,7 +23,7 @@ class _FovoriteScreenState extends State<FovoriteScreen> {
 
   // Pagination variables
   int page = 1;
-  int paginatedBy = 2;
+  int paginatedBy = 20;
 
   List<FoodModel> food = [];
 
@@ -84,6 +84,20 @@ class _FovoriteScreenState extends State<FovoriteScreen> {
             if (state is WishlistInitalLoadingState) {
               return const Center(
                 child: LoadingWidget(),
+              );
+            } else if (state is WishlistErrorState) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(state.message),
+                  20.height,
+                  ElevatedButton(
+                    onPressed: () {
+                      getInitailData();
+                    },
+                    child: const Text("Try Again"),
+                  ),
+                ],
               );
             } else {
               return SingleChildScrollView(

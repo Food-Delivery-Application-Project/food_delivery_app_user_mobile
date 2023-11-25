@@ -9,7 +9,10 @@ import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/view/main_tabs/wishlist_screen.dart';
+import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
@@ -127,7 +130,7 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
 
   // Wishlist pagination
   int wishlistPage = 1;
-  int wishlistPaginatedBy = 2;
+  int wishlistPaginatedBy = 20;
 
   final List<FoodModel> foods = [];
 
@@ -159,9 +162,18 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
       builder: (context, state) {
         return Column(
           children: [
-            const HeadingWidget(
+            HeadingWidget(
               headingText: "Favorites",
               isViewAll: true,
+              callback: () {
+                AppNavigator.goToPage(
+                  context: context,
+                  screen: const Scaffold(
+                    appBar: BackAppbarWidget(),
+                    body: WishlistScreen(),
+                  ),
+                );
+              },
             ),
             10.height,
             SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/global/colors/app_colors.dart';
 
 class OutlinedButtonWidget extends StatelessWidget {
   const OutlinedButtonWidget({
@@ -23,10 +24,12 @@ class OutlinedButtonWidget extends StatelessWidget {
       height: height ?? 55,
       child: OutlinedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
+        style: OutlinedButton.styleFrom(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
+          foregroundColor: AppColors.primary,
+          textStyle: AppTextStyle.outlinedButtonTextStyle,
         ),
         child: Text(
           caption,

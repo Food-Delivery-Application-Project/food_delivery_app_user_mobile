@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
-import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
@@ -28,7 +27,9 @@ class _CartScreenState extends State<CartScreen> {
 
   // Lists
   List<FoodModel> foodList = [];
-  List foodQuanty = [];
+  List foodQuantity = [];
+
+  double total = 0.0;
 
   @override
   void initState() {
@@ -73,7 +74,8 @@ class _CartScreenState extends State<CartScreen> {
     // });
     // increment quantity for the food item in the foodQuantity list
     setState(() {
-      foodQuanty[index]['quantity']++;
+      foodQuantity[index]['quantity']++;
+      incrementTotal(index);
     });
   }
 
@@ -84,22 +86,36 @@ class _CartScreenState extends State<CartScreen> {
     //   });
     // }
     // decrement quantity for the food item in the foodQuantity list
-    if (foodQuanty[index]['quantity'] > 1) {
+    if (foodQuantity[index]['quantity'] > 1) {
       setState(() {
-        foodQuanty[index]['quantity']--;
+        foodQuantity[index]['quantity']--;
+        decrementTotal(index);
       });
     }
   }
 
-  calculateTotalPrice() {
-    double totalPrice = 0;
-
-    // Calculate total price
-    for (var item in cartItems) {
-      totalPrice += item['price'] * item['quantity'];
+  void calculateTotalPrice() {
+    // Calculate total price from food quantity and food list
+    if (foodList.isEmpty) {
+      return;
     }
+    for (int i = 0; i < foodQuantity.length; i++) {
+      total += foodList[i].price!.toDouble() * foodQuantity[i]['quantity'];
+    }
+  }
 
-    return totalPrice;
+  // increment price by food price of single food
+  void incrementTotal(int index) {
+    setState(() {
+      total += foodList[index].price!.toDouble();
+    });
+  }
+
+  // decrement single quantity price from total
+  void decrementTotal(int index) {
+    setState(() {
+      total -= foodList[index].price!.toDouble();
+    });
   }
 
   @override
@@ -116,12 +132,15 @@ class _CartScreenState extends State<CartScreen> {
       listener: (context, state) {
         if (state is CartGetInitialDataState) {
           // set quantity to 1 for all the available items
+          foodList.addAll(state.response.data);
           for (var item in state.response.data) {
-            foodQuanty.add({
+            foodQuantity.add({
               'id': item.sId,
               'quantity': 1,
             });
           }
+          // calculate total price
+          calculateTotalPrice();
         }
       },
       builder: (context, state) {
@@ -180,7 +199,7 @@ class _CartScreenState extends State<CartScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  'Quantity: ${foodQuanty[index]['quantity']}'),
+                                  'Quantity: ${foodQuantity[index]['quantity']}'),
                               Text(
                                 'Price: ${state.response.data[index].price}',
                               ),
@@ -231,114 +250,18 @@ class _CartScreenState extends State<CartScreen> {
                     itemCount: state.response.data.length,
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                  )
+                  ),
+                  TotolAmountWidget(
+                    totalPrice: total,
+                    discount: 0,
+                    deliveryFee: 0,
+                  ).visible(foodList.isNotEmpty && foodQuantity.isNotEmpty),
                 ],
               ),
             ),
           );
         } else {
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: AppColors.white,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Cart Items",
-                  style: AppTextStyle.headings,
-                ),
-                20.height,
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount:
-                      cartItems.length + 2, // +2 for items and total price row
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index < cartItems.length) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: ListTile(
-                          title: Text(
-                            cartItems[index]['name'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Quantity: ${cartItems[index]['quantity']}'),
-                              Text('Price: \$${cartItems[index]['price']}'),
-                            ],
-                          ),
-                          leading: CachedNetworkImage(
-                            imageUrl: cartItems[index]['image'],
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, error, stackTrace) =>
-                                const Icon(Icons.error),
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                shape: BoxShape.rectangle,
-                                color: Colors.grey,
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.remove,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () => _decrementQuantity(index),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.add,
-                                  color: Colors.green,
-                                ),
-                                onPressed: () => _incrementQuantity(index),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else if (index == cartItems.length) {
-                      return TotolAmountWidget(
-                        totalPrice: totalPrice,
-                        discount: 0,
-                        deliveryFee: 0,
-                      );
-                    } else {
-                      return const SizedBox(
-                          height: 80); // Some padding at the end
-                    }
-                  },
-                ),
-              ],
-            ),
-          );
+          return Container();
         }
       },
     );
@@ -382,7 +305,7 @@ class TotolAmountWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${discount.toStringAsFixed(2)}',
+                discount.toStringAsFixed(2),
                 style: const TextStyle(
                   fontSize: 15,
                 ),
@@ -400,7 +323,7 @@ class TotolAmountWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${deliveryFee.toStringAsFixed(2)}',
+                deliveryFee.toStringAsFixed(2),
                 style: const TextStyle(
                   fontSize: 15,
                 ),
@@ -419,7 +342,7 @@ class TotolAmountWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${totalPrice.toStringAsFixed(2)}',
+                'PKR: ${totalPrice.toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

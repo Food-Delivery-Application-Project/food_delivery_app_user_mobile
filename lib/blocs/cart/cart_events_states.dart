@@ -38,6 +38,16 @@ class CartAddtoOrRemoveFromEvent extends CartEvent {
   });
 }
 
+class CartIsInCartEvent extends CartEvent {
+  final String userId;
+  final String foodId;
+
+  CartIsInCartEvent({
+    required this.userId,
+    required this.foodId,
+  });
+}
+
 abstract class CartState {}
 
 class CartInitialState extends CartState {}
@@ -61,6 +71,11 @@ class CartGetMoreDataState extends CartState {
 class CartAddToOrRemoveFromState extends CartState {
   final ApiResponse<dynamic> response;
   CartAddToOrRemoveFromState({required this.response});
+}
+
+class CartIsInCartState extends CartState {
+  final Map<String, dynamic> response;
+  CartIsInCartState({required this.response});
 }
 
 class CartErrorState extends CartState {

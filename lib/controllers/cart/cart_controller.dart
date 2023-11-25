@@ -17,7 +17,6 @@ class CartController {
         "${AppUrl.baseUrl}/get-food-item-to-addtocart/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
 
-    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final categories = body['data'];
@@ -48,6 +47,21 @@ class CartController {
       final body = jsonDecode(response.body);
 
       return ApiResponse<dynamic>.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
+  static Future<Map<String, dynamic>> isInCart(
+    String userId,
+    String foodId,
+  ) async {
+    final url =
+        "${AppUrl.baseUrl}/get-foodid-to-addtocart?userId=$userId&foodId=$foodId";
+    final response = await ApiManager.getRequest(url);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      return body['data'];
     } else {
       throw Exception(jsonDecode(response.body)['message']);
     }

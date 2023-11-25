@@ -17,7 +17,9 @@ import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 import 'package:food_delivery_app/widgets/foods/food_slider_widget.dart';
+import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:food_delivery_app/widgets/shimmer/category_shimmer.dart';
+import 'package:food_delivery_app/widgets/shimmer/food_item_shimmer.dart';
 import 'package:food_delivery_app/widgets/text/heading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -134,8 +136,19 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
 
   final List<FoodModel> foods = [];
 
+  // scroll controller
+  ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
+    // increment page number when user scrolls the list view builder
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        wishlistPage++;
+        wishlistGetMoreData();
+      }
+    });
     super.initState();
     wishlistGetInitialData();
   }
@@ -150,6 +163,16 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
     });
   }
 
+  wishlistGetMoreData() {
+    UserSecureStorage.fetchUserId().then((value) {
+      wishlistBloc.add(WishlistGetMoreDataEvent(
+        userId: value.toString(),
+        page: wishlistPage,
+        paginatedBy: wishlistPaginatedBy,
+      ));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WishlistBloc, WishlistState>(
@@ -157,9 +180,29 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
       listener: (context, state) {
         if (state is WishlistInitialLoadedState) {
           foods.addAll(state.foods.data);
+        } else if (state is WishlistGetMoreLoadedState) {
+          foods.addAll(state.foods.data);
         }
       },
       builder: (context, state) {
+        if (state is WishlistInitalLoadingState) {
+          // return list view builder shimmer for food product
+          return SizedBox(
+            height: 200,
+            child: ListView.builder(
+              controller: scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(right: 20),
+                  child: const FoodItemShimmer(),
+                );
+              },
+            ),
+          );
+        }
         return Column(
           children: [
             HeadingWidget(
@@ -179,17 +222,27 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
             SizedBox(
               height: 200,
               child: ListView.builder(
+                controller: scrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: foods.length,
+                shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    child: AspectRatio(
-                      aspectRatio: 0.8,
-                      child: FoodItem(
-                        foodModel: foods[index],
+                  return Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(right: 20),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: FoodItem(
+                            foodModel: foods[index],
+                          ),
+                        ),
                       ),
-                    ),
+                      // show loading widget when loading
+                      index == foods.length - 1 && state is WishlistLoadingState
+                          ? const LoadingWidget()
+                          : Container(),
+                    ],
                   );
                 },
               ),

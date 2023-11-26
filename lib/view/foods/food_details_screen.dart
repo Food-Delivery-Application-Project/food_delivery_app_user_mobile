@@ -89,7 +89,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
           Navigator.pop(context);
           AppSnackbars.normal(context, state.response.message);
         } else if (state is CartIsInCartState) {
-          isInCart = state.response['isFavorite'];
+          isInCart = state.response['isInCart'];
         } else if (state is CartErrorState) {
           isInCart = !isInCart!;
           Navigator.pop(context);

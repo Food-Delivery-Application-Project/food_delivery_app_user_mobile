@@ -62,5 +62,39 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             message: error.toString().replaceAll("Exception:", "")));
       }
     });
+
+    // Increment or decrement event handling
+    on<CartIncrementQtyEvent>((event, emit) async {
+      emit(CartUpdateQtyLoadingState());
+      try {
+        bool networkStatus = await isNetworkAvailable();
+        if (networkStatus) {
+          final response =
+              await CartController.incrementQty(event.userId, event.foodId);
+          emit(CartIncrementQtyState(response: response));
+        } else {
+          emit(CartIncrementQtyErrorState());
+        }
+      } catch (error) {
+        emit(CartIncrementQtyErrorState());
+      }
+    });
+
+    on<CartDecrementQtyEvent>((event, emit) async {
+      try {
+        bool networkStatus = await isNetworkAvailable();
+        if (networkStatus) {
+          final response = await CartController.decrementQty(
+            event.userId,
+            event.foodId,
+          );
+          emit(CartDecrementQtyState(response: response));
+        } else {
+          emit(CartDecrementQtyErrorState());
+        }
+      } catch (error) {
+        emit(CartDecrementQtyErrorState());
+      }
+    });
   }
 }

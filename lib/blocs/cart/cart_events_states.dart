@@ -48,6 +48,24 @@ class CartIsInCartEvent extends CartEvent {
   });
 }
 
+// Increment and decrement cart quantity
+
+class CartIncrementQtyEvent extends CartEvent {
+  String userId, foodId;
+  CartIncrementQtyEvent({
+    required this.userId,
+    required this.foodId,
+  });
+}
+
+class CartDecrementQtyEvent extends CartEvent {
+  String userId, foodId;
+  CartDecrementQtyEvent({
+    required this.userId,
+    required this.foodId,
+  });
+}
+
 abstract class CartState {}
 
 class CartInitialState extends CartState {}
@@ -82,3 +100,20 @@ class CartErrorState extends CartState {
   final String message;
   CartErrorState({required this.message});
 }
+
+// increment or decrement states
+class CartIncrementQtyState extends CartState {
+  final ApiResponse<dynamic> response;
+  CartIncrementQtyState({required this.response});
+}
+
+class CartDecrementQtyState extends CartState {
+  final ApiResponse<dynamic> response;
+  CartDecrementQtyState({required this.response});
+}
+
+class CartUpdateQtyLoadingState extends CartState {}
+
+class CartIncrementQtyErrorState extends CartState {}
+
+class CartDecrementQtyErrorState extends CartState {}

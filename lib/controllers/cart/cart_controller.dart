@@ -66,4 +66,37 @@ class CartController {
       throw Exception(jsonDecode(response.body)['message']);
     }
   }
+
+  // Increment or decrement
+  static Future<ApiResponse<dynamic>> incrementQty(
+    String userId,
+    String foodId,
+  ) async {
+    final url =
+        "${AppUrl.baseUrl}/food-item-addtocart-quantity-inc?userId=$userId&foodId=$foodId";
+    final response = await ApiManager.bodyLessPut(url);
+    print(response.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
+
+  static Future<ApiResponse<dynamic>> decrementQty(
+    String userId,
+    String foodId,
+  ) async {
+    final url =
+        "${AppUrl.baseUrl}/food-item-addtocart-quantity-dec?userId=$userId&foodId=$foodId";
+    final response = await ApiManager.bodyLessPut(url);
+    print(response.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
+  }
 }

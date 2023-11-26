@@ -7,7 +7,9 @@ import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/view/foods/food_details_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -31,6 +33,9 @@ class _CartScreenState extends State<CartScreen> {
 
   double total = 0.0;
 
+  String? userId;
+  int currentIndex = 0;
+
   @override
   void initState() {
     initInitialBloc();
@@ -39,6 +44,7 @@ class _CartScreenState extends State<CartScreen> {
 
   initInitialBloc() {
     UserSecureStorage.fetchUserId().then((value) {
+      userId = value.toString();
       cartBloc.add(
         CartGetInitialDataEvent(
           userId: value.toString(),
@@ -50,29 +56,15 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   initGetMoreDataBloc() {}
-  final List<Map<String, dynamic>> cartItems = [
-    {
-      'name': 'Pizza',
-      'quantity': 2,
-      'price': 9.99,
-      'image':
-          'https://i0.wp.com/www.onceuponachef.com/images/2020/06/Margherita-Pizza-scaled.jpg?resize=1080%2C1536&ssl=1',
-    },
-    {
-      'name': 'Tacos',
-      'quantity': 1,
-      'price': 6.49,
-      'image':
-          'https://i0.wp.com/www.onceuponachef.com/images/2023/08/Beef-Tacos.jpg?resize=1120%2C840&ssl=1',
-    },
-    // Add more sample cart items as needed
-  ];
 
   void _incrementQuantity(int index) {
-    // setState(() {
-    //   cartItems[index]['quantity']++;
-    // });
-    // increment quantity for the food item in the foodQuantity list
+    currentIndex = index;
+    cartBloc.add(
+      CartIncrementQtyEvent(
+        userId: userId.toString(),
+        foodId: foodList[index].sId.toString(),
+      ),
+    );
     setState(() {
       foodQuantity[index]['quantity']++;
       incrementTotal(index);
@@ -80,13 +72,14 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _decrementQuantity(int index) {
-    // if (cartItems[index]['quantity'] > 1) {
-    //   setState(() {
-    //     cartItems[index]['quantity']--;
-    //   });
-    // }
-    // decrement quantity for the food item in the foodQuantity list
     if (foodQuantity[index]['quantity'] > 1) {
+      currentIndex = index;
+      cartBloc.add(
+        CartDecrementQtyEvent(
+          userId: userId.toString(),
+          foodId: foodList[index].sId.toString(),
+        ),
+      );
       setState(() {
         foodQuantity[index]['quantity']--;
         decrementTotal(index);
@@ -120,13 +113,6 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double totalPrice = 0;
-
-    // Calculate total price
-    for (var item in cartItems) {
-      totalPrice += item['price'] * item['quantity'];
-    }
-
     return BlocConsumer<CartBloc, CartState>(
       bloc: cartBloc,
       listener: (context, state) {
@@ -141,6 +127,18 @@ class _CartScreenState extends State<CartScreen> {
           }
           // calculate total price
           calculateTotalPrice();
+        } else if (state is CartUpdateQtyLoadingState) {
+          // update quantity
+        } else if (state is CartIncrementQtyErrorState) {
+          foodQuantity[currentIndex]['quantity']--;
+        } else if (state is CartDecrementQtyErrorState) {
+          foodQuantity[currentIndex]['quantity']++;
+        } else if (state is CartIncrementQtyState) {
+          // update quantity
+          print('value incremented');
+        } else if (state is CartDecrementQtyState) {
+          // update quantity
+          print('value decremented');
         }
       },
       builder: (context, state) {
@@ -166,10 +164,11 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
           );
-        } else if (state is CartGetInitialDataState) {
+        } else {
           return Padding(
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               child: Column(
                 children: [
                   ListView.builder(
@@ -189,7 +188,7 @@ class _CartScreenState extends State<CartScreen> {
                         margin: const EdgeInsets.only(bottom: 16),
                         child: ListTile(
                           title: Text(
-                            state.response.data[index].foodName.toString(),
+                            foodList[index].foodName.toString(),
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -201,26 +200,36 @@ class _CartScreenState extends State<CartScreen> {
                               Text(
                                   'Quantity: ${foodQuantity[index]['quantity']}'),
                               Text(
-                                'Price: ${state.response.data[index].price}',
+                                'Price: ${foodList[index].price}',
                               ),
                             ],
                           ),
-                          leading: CachedNetworkImage(
-                            imageUrl:
-                                state.response.data[index].image.toString(),
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, error, stackTrace) =>
-                                Image.asset(AppImages.logoTrans),
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                shape: BoxShape.rectangle,
-                                color: Colors.grey,
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
+                          leading: GestureDetector(
+                            onTap: () {
+                              AppNavigator.goToPage(
+                                context: context,
+                                screen: FoodDetailsScreen(
+                                  food: foodList[index],
+                                ),
+                              );
+                            },
+                            child: CachedNetworkImage(
+                              imageUrl: foodList[index].image.toString(),
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, error, stackTrace) =>
+                                  Image.asset(AppImages.logoTrans),
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  shape: BoxShape.rectangle,
+                                  color: Colors.grey,
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
@@ -247,7 +256,7 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                       );
                     },
-                    itemCount: state.response.data.length,
+                    itemCount: foodList.length,
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
@@ -260,8 +269,6 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
           );
-        } else {
-          return Container();
         }
       },
     );

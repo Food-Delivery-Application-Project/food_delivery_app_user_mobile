@@ -228,6 +228,7 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
                         margin: const EdgeInsets.only(right: 20),

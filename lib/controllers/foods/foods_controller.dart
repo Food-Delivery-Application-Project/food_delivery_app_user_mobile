@@ -17,7 +17,7 @@ class FoodController {
         "${AppUrl.baseUrl}/get-food-items-by-category-id/$categoryId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final categories = body['data'];
       list = categories

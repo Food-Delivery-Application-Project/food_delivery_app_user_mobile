@@ -110,9 +110,9 @@ class AppTextStyle {
 
   static var listTileTitle = TextStyle(
     color: AppColors.black,
-    fontSize: 16,
-    fontFamily: AppFonts.jost,
-    fontWeight: FontWeight.w400,
+    fontSize: 18,
+    fontFamily: AppFonts.poppins,
+    fontWeight: FontWeight.w700,
   );
 
   static var listTileSubHeading = listTileTitle.copyWith(fontSize: 12);

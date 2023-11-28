@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
+import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/widgets/buttons/outlined_button.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -92,13 +94,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 children: [
                   Image.asset(AppImages.four04),
                   20.height,
-                  Text(state.message),
+                  Text(state.message, style: AppTextStyle.subHeading),
                   20.height,
-                  ElevatedButton(
-                    onPressed: () {
-                      getInitailData();
-                    },
-                    child: const Text("Try Again"),
+                  OutlinedButtonWidget(
+                    caption: "Reload Page",
+                    onPressed: getInitailData,
                   ),
                 ],
               );

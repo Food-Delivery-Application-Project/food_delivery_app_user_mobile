@@ -3,14 +3,24 @@ class OrdersModel {
   String? orderId;
   int? totalPrice;
   String? address;
+  String? status;
+  String? createdAt;
 
-  OrdersModel({this.user, this.orderId, this.totalPrice, this.address});
+  OrdersModel(
+      {this.user,
+      this.orderId,
+      this.totalPrice,
+      this.address,
+      this.status,
+      this.createdAt});
 
   OrdersModel.fromJson(Map<String, dynamic> json) {
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     orderId = json['orderId'];
     totalPrice = json['totalPrice'];
     address = json['address'];
+    status = json['status'];
+    createdAt = json['createdAt'];
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +31,8 @@ class OrdersModel {
     data['orderId'] = orderId;
     data['totalPrice'] = totalPrice;
     data['address'] = address;
+    data['status'] = status;
+    data['createdAt'] = createdAt;
     return data;
   }
 }

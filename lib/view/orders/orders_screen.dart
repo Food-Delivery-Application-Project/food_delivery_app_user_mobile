@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/orders/orders_bloc.dart';
+import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
+import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/orders/orders_model.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
+import 'package:food_delivery_app/widgets/buttons/outlined_button.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key? key}) : super(key: key);
@@ -53,13 +57,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     state.message,
                     style: boldTextStyle(),
                   ),
-                  10.height,
-                  ElevatedButton(
+                  20.height,
+                  OutlinedButtonWidget(
+                    caption: "Reload Page",
                     onPressed: () {
                       ordersBloc.add(OrdersGetInitialDataEvent());
                     },
-                    child: const Text("Retry"),
-                  )
+                  ),
                 ],
               ),
             );
@@ -67,15 +71,43 @@ class _OrdersScreenState extends State<OrdersScreen> {
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  // give it a style
-                  onTap: () {},
-                  leading: const CircleAvatar(
-                    backgroundImage: AssetImage(AppImages.logoTrans),
+                return Container(
+                  margin: const EdgeInsets.all(3),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  title: Text(orders[index].user!.fullname!),
-                  subtitle: Text("Total Price: ${orders[index].totalPrice}"),
-                  trailing: Text(orders[index].address.toString()),
+                  child: ListTile(
+                    onTap: () {},
+                    tileColor: orders[index].status == "pending"
+                        ? AppColors.grey
+                        : AppColors.lightGrey,
+                    leading: const CircleAvatar(
+                      backgroundImage: AssetImage(AppImages.logoTrans),
+                    ),
+                    title: Text(
+                      orders[index].user!.fullname.toString(),
+                      style: AppTextStyle.listTileTitle,
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Total Price: ${orders[index].totalPrice}"),
+                        Text("Address: ${orders[index].address}"),
+                      ],
+                    ),
+                    trailing: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text("${orders[index].status}"),
+                        Text(
+                          timeago.format(
+                            DateTime.parse(orders[index].createdAt.toString()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             );

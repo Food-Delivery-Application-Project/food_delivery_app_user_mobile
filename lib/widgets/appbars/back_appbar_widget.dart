@@ -23,7 +23,7 @@ class BackAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
               )),
       centerTitle: true,
       leading: Padding(
-        padding: EdgeInsets.all(8.w),
+        padding: EdgeInsets.all(10.w),
         child: GestureDetector(
           onTap: () {
             context.pop();
@@ -32,7 +32,7 @@ class BackAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
             decoration: ShapeDecoration(
               color: AppColors.white,
               shape: RoundedRectangleBorder(
-                side: const BorderSide(width: 1.5, color: AppColors.borderGrey),
+                side: const BorderSide(width: 2, color: AppColors.borderGrey),
                 borderRadius: BorderRadius.circular(10.r),
               ),
             ),

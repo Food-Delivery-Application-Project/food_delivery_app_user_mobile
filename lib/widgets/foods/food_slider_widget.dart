@@ -7,6 +7,7 @@ import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/view/foods/food_details_screen.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
@@ -100,7 +101,7 @@ class _RandomCategoryItemWidgetState extends State<RandomCategoryItemWidget> {
               ),
             ),
           ],
-        );
+        ).visible(state.food.data.isNotEmpty);
       } else if (state is FoodLoadingState) {
         return CarouselSlider(
             options: CarouselOptions(

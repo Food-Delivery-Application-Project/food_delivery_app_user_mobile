@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
+import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
@@ -89,6 +90,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Image.asset(AppImages.four04),
+                  20.height,
                   Text(state.message),
                   20.height,
                   ElevatedButton(

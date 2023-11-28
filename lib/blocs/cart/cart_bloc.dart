@@ -13,13 +13,16 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       try {
         bool networkStatus = await isNetworkAvailable();
         if (networkStatus) {
-          final ApiResponse<List<FoodModel>> foods =
+          final ApiResponse<List<CartFoodModel>> foods =
               await CartController.getCartItemsByUserId(
-            event.userId,
-            page: event.page,
-            paginatedBy: event.paginatedBy,
+            page: 1,
+            paginatedBy: 50,
           );
-          emit(CartGetInitialDataState(response: foods));
+          if (foods.data.isEmpty) {
+            emit(CartEmptyState());
+          } else {
+            emit(CartGetInitialDataState(response: foods));
+          }
         } else {
           emit(CartErrorState(message: "No Internet Connection"));
         }

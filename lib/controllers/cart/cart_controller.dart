@@ -4,24 +4,24 @@ import 'package:food_delivery_app/constants/app_url.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/api_manager.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
 
 class CartController {
-  static Future<ApiResponse<List<FoodModel>>> getCartItemsByUserId(
-    String userId, {
+  static Future<ApiResponse<List<CartFoodModel>>> getCartItemsByUserId({
     required int page,
     required int paginatedBy,
   }) async {
-    List<FoodModel> list = [];
-
+    List<CartFoodModel> list = [];
+    final userId = await UserSecureStorage.fetchUserId();
     final url =
         "${AppUrl.baseUrl}/get-food-item-to-addtocart/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
-
+    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final categories = body['data'];
       list = categories
-          .map<FoodModel>((item) => FoodModel.fromJson(item))
+          .map<CartFoodModel>((item) => CartFoodModel.fromJson(item))
           .toList();
 
       return ApiResponse.fromJson(body, (p0) => list);

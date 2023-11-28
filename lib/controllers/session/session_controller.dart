@@ -16,9 +16,12 @@ class SessionController {
       url,
       headers: <String, String>{
         "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        "authorization": "Bearer $token",
       },
     );
+
+    print(token);
+    print(response.body);
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);

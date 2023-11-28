@@ -4,14 +4,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
+import 'package:food_delivery_app/blocs/orders/orders_bloc.dart';
+import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
+import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
-import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/utils/app_toast.dart';
 import 'package:food_delivery_app/view/foods/food_details_screen.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
+import 'package:food_delivery_app/widgets/text_fields/text_fields_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class CartScreen extends StatefulWidget {
@@ -20,15 +24,12 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  // Blocs
-  CartBloc cartBloc = CartBloc();
-
   // Pagination
   int page = 1;
   int paginatedBy = 10;
 
   // Lists
-  List<FoodModel> foodList = [];
+  List<CartFoodModel> foodList = [];
   List foodQuantity = [];
 
   double total = 0.0;
@@ -38,33 +39,24 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   void initState() {
-    initInitialBloc();
+    initBloc();
     super.initState();
   }
 
-  initInitialBloc() {
-    UserSecureStorage.fetchUserId().then((value) {
-      userId = value.toString();
-      cartBloc.add(
-        CartGetInitialDataEvent(
-          userId: value.toString(),
-          page: page,
-          paginatedBy: paginatedBy,
-        ),
-      );
-    });
+  initBloc() {
+    context.read<CartBloc>().add(CartGetInitialDataEvent());
   }
 
   initGetMoreDataBloc() {}
 
   void _incrementQuantity(int index) {
     currentIndex = index;
-    cartBloc.add(
-      CartIncrementQtyEvent(
-        userId: userId.toString(),
-        foodId: foodList[index].sId.toString(),
-      ),
-    );
+    context.read<CartBloc>().add(
+          CartIncrementQtyEvent(
+            userId: userId.toString(),
+            foodId: foodList[index].foodId!.sId.toString(),
+          ),
+        );
     setState(() {
       foodQuantity[index]['quantity']++;
       incrementTotal(index);
@@ -74,12 +66,12 @@ class _CartScreenState extends State<CartScreen> {
   void _decrementQuantity(int index) {
     if (foodQuantity[index]['quantity'] > 1) {
       currentIndex = index;
-      cartBloc.add(
-        CartDecrementQtyEvent(
-          userId: userId.toString(),
-          foodId: foodList[index].sId.toString(),
-        ),
-      );
+      context.read<CartBloc>().add(
+            CartDecrementQtyEvent(
+              userId: userId.toString(),
+              foodId: foodList[index].foodId!.sId.toString(),
+            ),
+          );
       setState(() {
         foodQuantity[index]['quantity']--;
         decrementTotal(index);
@@ -93,36 +85,36 @@ class _CartScreenState extends State<CartScreen> {
       return;
     }
     for (int i = 0; i < foodQuantity.length; i++) {
-      total += foodList[i].price!.toDouble() * foodQuantity[i]['quantity'];
+      total +=
+          foodList[i].foodId!.price!.toDouble() * foodQuantity[i]['quantity'];
     }
   }
 
   // increment price by food price of single food
   void incrementTotal(int index) {
     setState(() {
-      total += foodList[index].price!.toDouble();
+      total += foodList[index].foodId!.price!.toDouble();
     });
   }
 
   // decrement single quantity price from total
   void decrementTotal(int index) {
     setState(() {
-      total -= foodList[index].price!.toDouble();
+      total -= foodList[index].foodId!.price!.toDouble();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CartBloc, CartState>(
-      bloc: cartBloc,
       listener: (context, state) {
         if (state is CartGetInitialDataState) {
           // set quantity to 1 for all the available items
           foodList.addAll(state.response.data);
           for (var item in state.response.data) {
             foodQuantity.add({
-              'id': item.sId,
-              'quantity': 1,
+              'id': item.foodId!.sId.toString(),
+              'quantity': item.quantity,
             });
           }
           // calculate total price
@@ -150,16 +142,31 @@ class _CartScreenState extends State<CartScreen> {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(state.message),
-
                 // Reload Button
                 20.height,
                 ElevatedButton(
                   onPressed: () {
-                    initInitialBloc();
+                    context.read<CartBloc>().add(CartGetInitialDataEvent());
                   },
                   child: const Text('Reload'),
+                ),
+              ],
+            ),
+          );
+        } else if (state is CartEmptyState) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(AppImages.emptyCart),
+                20.height,
+                Text(
+                  'Your cart is empty',
+                  style: AppTextStyle.headings,
                 ),
               ],
             ),
@@ -171,6 +178,12 @@ class _CartScreenState extends State<CartScreen> {
               physics: const NeverScrollableScrollPhysics(),
               child: Column(
                 children: [
+                  TotolAmountWidget(
+                    totalPrice: total,
+                    discount: 0,
+                    deliveryFee: 0,
+                  ).visible(foodList.isNotEmpty && foodQuantity.isNotEmpty),
+                  20.height,
                   ListView.builder(
                     itemBuilder: (context, index) {
                       return Container(
@@ -188,7 +201,7 @@ class _CartScreenState extends State<CartScreen> {
                         margin: const EdgeInsets.only(bottom: 16),
                         child: ListTile(
                           title: Text(
-                            foodList[index].foodName.toString(),
+                            foodList[index].foodId!.foodName.toString(),
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -200,7 +213,7 @@ class _CartScreenState extends State<CartScreen> {
                               Text(
                                   'Quantity: ${foodQuantity[index]['quantity']}'),
                               Text(
-                                'Price: ${foodList[index].price}',
+                                'Price: ${foodList[index].foodId!.price}',
                               ),
                             ],
                           ),
@@ -209,12 +222,13 @@ class _CartScreenState extends State<CartScreen> {
                               AppNavigator.goToPage(
                                 context: context,
                                 screen: FoodDetailsScreen(
-                                  food: foodList[index],
+                                  food: foodList[index].foodId as FoodModel,
                                 ),
                               );
                             },
                             child: CachedNetworkImage(
-                              imageUrl: foodList[index].image.toString(),
+                              imageUrl:
+                                  foodList[index].foodId!.image.toString(),
                               height: 50,
                               width: 50,
                               fit: BoxFit.cover,
@@ -260,11 +274,6 @@ class _CartScreenState extends State<CartScreen> {
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
-                  TotolAmountWidget(
-                    totalPrice: total,
-                    discount: 0,
-                    deliveryFee: 0,
-                  ).visible(foodList.isNotEmpty && foodQuantity.isNotEmpty),
                 ],
               ),
             ),
@@ -275,7 +284,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 }
 
-class TotolAmountWidget extends StatelessWidget {
+class TotolAmountWidget extends StatefulWidget {
   const TotolAmountWidget({
     super.key,
     required this.totalPrice,
@@ -288,83 +297,164 @@ class TotolAmountWidget extends StatelessWidget {
   final double deliveryFee;
 
   @override
+  State<TotolAmountWidget> createState() => _TotolAmountWidgetState();
+}
+
+class _TotolAmountWidgetState extends State<TotolAmountWidget> {
+  final TextEditingController addressController = TextEditingController();
+
+  // Blocs
+  OrdersBloc ordersBloc = OrdersBloc();
+
+  @override
+  void dispose() {
+    addressController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: AppColors.primary,
-          width: 2,
+    return BlocListener<OrdersBloc, OrdersState>(
+      bloc: ordersBloc,
+      listener: (context, state) {
+        if (state is OrdersLoadingState) {
+          Navigator.pop(context);
+          AppDialogs.loadingDialog(context);
+        } else if (state is OrdersPlaceState) {
+          AppDialogs.closeDialog(context);
+          context.read<CartBloc>().add(CartGetInitialDataEvent());
+          AppToast.success(state.response.message);
+        } else if (state is OrdersErrorState) {
+          AppDialogs.closeDialog(context);
+          AppToast.danger(state.message);
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: AppColors.primary,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Discount',
-                style: TextStyle(
-                  fontSize: 15,
+        margin: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Discount',
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-              Text(
-                discount.toStringAsFixed(2),
-                style: const TextStyle(
-                  fontSize: 15,
+                Text(
+                  widget.discount.toStringAsFixed(2),
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Delivery fee',
-                style: TextStyle(
-                  fontSize: 15,
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Delivery fee',
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-              Text(
-                deliveryFee.toStringAsFixed(2),
-                style: const TextStyle(
-                  fontSize: 15,
+                Text(
+                  widget.deliveryFee.toStringAsFixed(2),
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Total',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Total',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                'PKR: ${totalPrice.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                Text(
+                  'PKR: ${widget.totalPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          PrimaryButtonWidget(
-            width: MediaQuery.of(context).size.width * 0.9,
-            onPressed: () {},
-            caption: "Proceed to payment",
-            backgroundColor: AppColors.primary,
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 16),
+            PrimaryButtonWidget(
+              onPressed: () {
+                // Show bottom sheet with one text field for address
+                showBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      height: context.height() * 0.7,
+                      decoration: const BoxDecoration(
+                        color: AppColors.darkBackground,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 50,
+                        horizontal: 20,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Enter your address',
+                            style: AppTextStyle.headings.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextFieldWidget(
+                            labelText: "",
+                            controller: addressController,
+                            hintText: "Enter your address",
+                          ),
+                          const SizedBox(height: 16),
+                          PrimaryButtonWidget(
+                            onPressed: () {
+                              // Place order
+                              ordersBloc.add(
+                                OrderPlaceEvent(
+                                  address: addressController.text,
+                                  totalPrice: widget.totalPrice,
+                                ),
+                              );
+                            },
+                            caption: "Place order",
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              caption: "Proceed to payment",
+              backgroundColor: AppColors.primary,
+            ),
+          ],
+        ),
       ),
     );
   }

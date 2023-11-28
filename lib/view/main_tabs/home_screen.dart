@@ -17,7 +17,6 @@ import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 import 'package:food_delivery_app/widgets/foods/food_slider_widget.dart';
-import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:food_delivery_app/widgets/shimmer/category_shimmer.dart';
 import 'package:food_delivery_app/widgets/shimmer/food_item_shimmer.dart';
 import 'package:food_delivery_app/widgets/text/heading_widget.dart';
@@ -48,6 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
               20.height,
               const FoodCategories(),
               20.height,
+              // Random foods
+
+              const RandomFoods(),
+              20.height,
+
               // Favorites
 
               const FavoriteFoods(),
@@ -56,6 +60,79 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class RandomFoods extends StatefulWidget {
+  const RandomFoods({Key? key}) : super(key: key);
+
+  @override
+  State<RandomFoods> createState() => _RandomFoodsState();
+}
+
+class _RandomFoodsState extends State<RandomFoods> {
+  FoodBloc foodBloc = FoodBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    foodBloc.add(RandomFoodEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FoodBloc, FoodState>(
+      bloc: foodBloc,
+      builder: (context, state) {
+        if (state is RandomFoodLoadedState) {
+          return Column(
+            children: [
+              HeadingWidget(
+                headingText: "Available Foods",
+                isViewAll: false,
+                callback: () {
+                  AppNavigator.goToPage(
+                    context: context,
+                    screen: const Scaffold(
+                      appBar: BackAppbarWidget(),
+                      body: WishlistScreen(),
+                    ),
+                  );
+                },
+              ),
+              10.height,
+              SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.food.data.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: FoodItem(
+                              foodModel: state.food.data[index],
+                            ),
+                          ),
+                        ),
+                        const AppDivider(),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ).visible(state.food.data.isNotEmpty);
+        } else {
+          return const SizedBox();
+        }
+      },
     );
   }
 }
@@ -93,20 +170,23 @@ class FoodCategories extends StatelessWidget {
               10.height,
               SizedBox(
                 height: 200.h,
-                child: AppBuilders.categories((ctx, index) {
-                  return Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: CategoryWidget(
-                        category: state.categories.data[index],
+                child: AppBuilders.categories(
+                  (ctx, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(right: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                  );
-                }, state.categories.data.length),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: CategoryWidget(
+                          category: state.categories.data[index],
+                        ),
+                      ),
+                    );
+                  },
+                  state.categories.data.length,
+                ),
               ),
               20.height,
               const AppDivider(),
@@ -142,13 +222,13 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
   @override
   void initState() {
     // increment page number when user scrolls the list view builder
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        wishlistPage++;
-        wishlistGetMoreData();
-      }
-    });
+    // scrollController.addListener(() {
+    //   if (scrollController.position.pixels ==
+    //       scrollController.position.maxScrollExtent) {
+    //     wishlistPage++;
+    //     wishlistGetMoreData();
+    //   }
+    // });
     super.initState();
     wishlistGetInitialData();
   }
@@ -204,6 +284,7 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
           );
         }
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             HeadingWidget(
               headingText: "Favorites",
@@ -227,23 +308,14 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
                 itemCount: foods.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 20),
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: FoodItem(
-                            foodModel: foods[index],
-                          ),
-                        ),
+                  return Container(
+                    margin: const EdgeInsets.only(right: 20),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: FoodItem(
+                        foodModel: foods[index],
                       ),
-                      // show loading widget when loading
-                      index == foods.length - 1 && state is WishlistLoadingState
-                          ? const LoadingWidget()
-                          : Container(),
-                    ],
+                    ),
                   );
                 },
               ),

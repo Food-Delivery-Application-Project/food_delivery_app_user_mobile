@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/global/fonts/app_fonts.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
+import 'package:food_delivery_app/view/orders/orders_screen.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -66,7 +68,12 @@ class BasicAppbarWidget extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            AppNavigator.goToPage(
+              context: context,
+              screen: const OrdersScreen(),
+            );
+          },
           icon: Icon(
             // icon for orders
             Ionicons.bag_handle_outline,

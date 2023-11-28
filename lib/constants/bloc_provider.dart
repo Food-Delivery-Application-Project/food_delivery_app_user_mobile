@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/blocs/auth/auth_bloc.dart';
+import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
 import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/blocs/image_picker/image_picker_bloc.dart';
@@ -15,6 +16,9 @@ class BlocProviders {
     ),
     BlocProvider<FoodBloc>(
       create: (context) => FoodBloc()..add(RandomFoodEvent()),
+    ),
+    BlocProvider<CartBloc>(
+      create: (context) => CartBloc()..add(CartGetInitialDataEvent()),
     ),
   ];
 }

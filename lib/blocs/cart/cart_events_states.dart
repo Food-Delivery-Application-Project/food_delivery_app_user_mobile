@@ -4,17 +4,7 @@ part of 'cart_bloc.dart';
 
 abstract class CartEvent {}
 
-class CartGetInitialDataEvent extends CartEvent {
-  final String userId;
-  final int page;
-  final int paginatedBy;
-
-  CartGetInitialDataEvent({
-    required this.userId,
-    required this.page,
-    required this.paginatedBy,
-  });
-}
+class CartGetInitialDataEvent extends CartEvent {}
 
 class CartGetMoreDataEvent extends CartEvent {
   final String userId;
@@ -77,14 +67,16 @@ class CartInitialLoadingState extends CartState {}
 class CartGetMoreLoadingState extends CartState {}
 
 class CartGetInitialDataState extends CartState {
-  final ApiResponse<List<FoodModel>> response;
+  final ApiResponse<List<CartFoodModel>> response;
   CartGetInitialDataState({required this.response});
 }
 
 class CartGetMoreDataState extends CartState {
-  final ApiResponse<List<FoodModel>> response;
+  final ApiResponse<List<CartFoodModel>> response;
   CartGetMoreDataState({required this.response});
 }
+
+class CartEmptyState extends CartState {}
 
 class CartAddToOrRemoveFromState extends CartState {
   final ApiResponse<dynamic> response;

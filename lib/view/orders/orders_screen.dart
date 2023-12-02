@@ -5,6 +5,8 @@ import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/orders/orders_model.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
+import 'package:food_delivery_app/view/orders/order_foods_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/buttons/outlined_button.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
@@ -72,13 +74,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
               itemCount: orders.length,
               itemBuilder: (context, index) {
                 return Container(
-                  margin: const EdgeInsets.all(3),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.white,
+                    ),
                   ),
                   child: ListTile(
-                    onTap: () {},
+                    onTap: () {
+                      AppNavigator.goToPage(
+                        context: context,
+                        screen: OrderFoodsScreen(
+                          orderId: orders[index].orderId.toString(),
+                        ),
+                      );
+                    },
                     tileColor: orders[index].status == "pending"
                         ? AppColors.grey
                         : AppColors.lightGrey,

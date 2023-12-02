@@ -25,6 +25,11 @@ class OrdersGetMoreDataEvent extends OrdersEvent {
   });
 }
 
+class OrderFoodInitialEvent extends OrdersEvent {
+  String orderId;
+  OrderFoodInitialEvent({required this.orderId});
+}
+
 // States
 abstract class OrdersState {}
 
@@ -60,6 +65,26 @@ class OrdersGetInitialDataState extends OrdersState {
   final ApiResponse<List<OrdersModel>> response;
 
   OrdersGetInitialDataState({
+    required this.response,
+  });
+}
+
+// Order foods by order ID
+
+class OrderFoodsLoadingInitialState extends OrdersState {}
+
+class OrderFoodsInitialDataState extends OrdersState {
+  final ApiResponse<List<CartFoodModel>> response;
+
+  OrderFoodsInitialDataState({
+    required this.response,
+  });
+}
+
+class OrderFoodsMoreDataState extends OrdersState {
+  final ApiResponse<List<CartFoodModel>> response;
+
+  OrderFoodsMoreDataState({
     required this.response,
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_delivery_app/controllers/orders/orders_controller.dart';
 import 'package:food_delivery_app/models/api_response.dart';
+import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/models/orders/orders_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -55,6 +56,23 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
           final response = await OrdersController.getPlacedOrdersByUserId(
               page: event.page, paginatedBy: 10);
           emit(OrdersGetMoreDataState(response: response));
+        } else {
+          emit(OrdersErrorState(message: "No Internet Connection"));
+        }
+      } catch (_) {
+        // throw some beautiful non technical error message
+        throw Exception("Something went wrong");
+      }
+    });
+
+    on<OrderFoodInitialEvent>((event, emit) async {
+      emit(OrderFoodsLoadingInitialState());
+      try {
+        bool networkStatus = await isNetworkAvailable();
+        if (networkStatus) {
+          final response =
+              await OrdersController.getFoodsByOrderId(event.orderId);
+          emit(OrderFoodsInitialDataState(response: response));
         } else {
           emit(OrdersErrorState(message: "No Internet Connection"));
         }

@@ -16,11 +16,10 @@ class CartController {
     final url =
         "${AppUrl.baseUrl}/get-food-item-to-addtocart/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
-    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
-      final categories = body['data'];
-      list = categories
+      final foods = body['data'];
+      list = foods
           .map<CartFoodModel>((item) => CartFoodModel.fromJson(item))
           .toList();
 

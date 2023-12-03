@@ -65,7 +65,7 @@ class AuthInitialState extends AuthState {}
 class AuthLoadingState extends AuthState {}
 
 class AuthRegistrationSuccessState extends AuthState {
-  final ApiResponse<SignUpModel> response;
+  final ApiResponse response;
   AuthRegistrationSuccessState({required this.response});
 }
 
@@ -80,7 +80,7 @@ class AuthVerificationState extends AuthState {
 }
 
 class AuthLoginState extends AuthState {
-  final ApiResponse<LoginModel> response;
+  final ApiResponse response;
   AuthLoginState({required this.response});
 }
 
@@ -100,7 +100,7 @@ class AuthVerifyOtpState extends AuthState {
 }
 
 class AuthSentOtpState extends AuthState {
-  final ApiResponse<OtpModel> response;
+  final ApiResponse response;
   AuthSentOtpState({required this.response});
 }
 

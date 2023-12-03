@@ -5,8 +5,6 @@ import 'package:food_delivery_app/controllers/auth/auth_controller.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/auth/auth_model.dart';
 import 'package:food_delivery_app/models/auth/login_model.dart';
-import 'package:food_delivery_app/models/auth/otp_model.dart';
-import 'package:food_delivery_app/models/auth/signup_model.dart';
 import 'package:food_delivery_app/models/user/register_user_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 

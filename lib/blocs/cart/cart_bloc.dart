@@ -13,8 +13,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       try {
         bool networkStatus = await isNetworkAvailable();
         if (networkStatus) {
-          final ApiResponse<List<CartFoodModel>> foods =
-              await CartController.getCartItemsByUserId(
+          final foods = await CartController.getCartItemsByUserId(
             page: 1,
             paginatedBy: 50,
           );

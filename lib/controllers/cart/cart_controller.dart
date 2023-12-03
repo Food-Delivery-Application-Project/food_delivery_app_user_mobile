@@ -29,26 +29,12 @@ class CartController {
     }
   }
 
-  static Future<ApiResponse<dynamic>> addToOrRemoveFromCart(
-    String userId,
-    String foodId,
-  ) async {
+  static Future<ApiResponse> addToOrRemoveFromCart(
+      String userId, String foodId) async {
     const url = "${AppUrl.baseUrl}/add-or-remove-food-item-addtocart";
-    final response = await ApiManager.postRequest(
-      {
-        "userId": userId,
-        "foodId": foodId,
-      },
-      url,
-    );
-    print(response.body);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final body = jsonDecode(response.body);
-
-      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
-    } else {
-      throw Exception(jsonDecode(response.body)['message']);
-    }
+    final body = {"userId": userId, "foodId": foodId};
+    final response = await ApiManager.postRequest(body, url);
+    return ApiManager.returnModel(response);
   }
 
   static Future<Map<String, dynamic>> isInCart(
@@ -67,35 +53,19 @@ class CartController {
   }
 
   // Increment or decrement
-  static Future<ApiResponse<dynamic>> incrementQty(
-    String userId,
-    String foodId,
-  ) async {
+  static Future<ApiResponse> incrementQty(String userId, String foodId) async {
+    var id = await UserSecureStorage.fetchUserId();
     final url =
-        "${AppUrl.baseUrl}/food-item-addtocart-quantity-inc?userId=$userId&foodId=$foodId";
+        "${AppUrl.baseUrl}/food-item-addtocart-quantity-inc?userId=$id&foodId=$foodId";
     final response = await ApiManager.bodyLessPut(url);
-    print(response.body);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final body = jsonDecode(response.body);
-      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
-    } else {
-      throw Exception(jsonDecode(response.body)['message']);
-    }
+    return ApiManager.returnModel(response);
   }
 
-  static Future<ApiResponse<dynamic>> decrementQty(
-    String userId,
-    String foodId,
-  ) async {
+  static Future<ApiResponse> decrementQty(String userId, String foodId) async {
+    var id = await UserSecureStorage.fetchUserId();
     final url =
-        "${AppUrl.baseUrl}/food-item-addtocart-quantity-dec?userId=$userId&foodId=$foodId";
+        "${AppUrl.baseUrl}/food-item-addtocart-quantity-dec?userId=$id&foodId=$foodId";
     final response = await ApiManager.bodyLessPut(url);
-    print(response.body);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final body = jsonDecode(response.body);
-      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
-    } else {
-      throw Exception(jsonDecode(response.body)['message']);
-    }
+    return ApiManager.returnModel(response);
   }
 }

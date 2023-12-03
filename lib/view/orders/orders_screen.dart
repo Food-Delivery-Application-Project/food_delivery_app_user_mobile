@@ -74,47 +74,69 @@ class _OrdersScreenState extends State<OrdersScreen> {
               itemCount: orders.length,
               itemBuilder: (context, index) {
                 return Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: AppColors.white,
-                    ),
-                  ),
-                  child: ListTile(
-                    onTap: () {
-                      AppNavigator.goToPage(
-                        context: context,
-                        screen: OrderFoodsScreen(
-                          orderId: orders[index].orderId.toString(),
-                        ),
-                      );
-                    },
-                    tileColor: orders[index].status == "pending"
-                        ? AppColors.grey
-                        : AppColors.lightGrey,
-                    leading: const CircleAvatar(
-                      backgroundImage: AssetImage(AppImages.logoTrans),
-                    ),
-                    title: Text(
-                      orders[index].user!.fullname.toString(),
-                      style: AppTextStyle.listTileTitle,
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Total Price: ${orders[index].totalPrice}"),
-                        Text("Address: ${orders[index].address}"),
-                      ],
-                    ),
-                    trailing: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text("${orders[index].status}"),
-                        Text(
-                          timeago.format(
-                            DateTime.parse(orders[index].createdAt.toString()),
+                  child: Dismissible(
+                    background: Container(
+                      color: AppColors.dangerColor.withOpacity(0.1),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Icon(
+                            Icons.delete,
+                            color: AppColors.dangerColor,
                           ),
-                        ),
-                      ],
+                          10.width,
+                          Text(
+                            "Delete",
+                            style: boldTextStyle(color: AppColors.dangerColor),
+                          ),
+                          20.width,
+                        ],
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      setState(() {
+                        orders.remove(orders[index]);
+                      });
+                    },
+                    key: UniqueKey(),
+                    child: ListTile(
+                      onTap: () {
+                        AppNavigator.goToPage(
+                          context: context,
+                          screen: OrderFoodsScreen(
+                            orderId: orders[index].orderId.toString(),
+                          ),
+                        );
+                      },
+                      tileColor: orders[index].status == "pending"
+                          ? AppColors.grey
+                          : AppColors.success.withOpacity(0.1),
+                      leading: const CircleAvatar(
+                        backgroundImage: AssetImage(AppImages.logoTrans),
+                      ),
+                      title: Text(
+                        "Total Price: ${orders[index].totalPrice}",
+                        style: AppTextStyle.listTileTitle,
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Address: ${orders[index].address}"),
+                          Text("ID: ${orders[index].orderId?.substring(20)}"),
+                        ],
+                      ),
+                      trailing: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text("${orders[index].status}"),
+                          Text(
+                            timeago.format(
+                              DateTime.parse(
+                                  orders[index].createdAt.toString()),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

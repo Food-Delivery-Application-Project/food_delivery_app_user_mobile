@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:food_delivery_app/models/api_response.dart';
 import 'package:http/http.dart';
 
 class ApiManager {
@@ -42,5 +43,15 @@ class ApiManager {
     // Perform a POST request with the specified body and return the response.
     return await put(Uri.parse(url),
         headers: headers ?? {'Content-Type': 'application/json'});
+  }
+
+  static Future<ApiResponse> returnModel(var response, {var model}) async {
+    final body = jsonDecode(response.body);
+    
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return ApiResponse.fromJson(body, (p0) => model);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
   }
 }

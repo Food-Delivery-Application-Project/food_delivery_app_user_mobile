@@ -67,7 +67,7 @@ class CartInitialLoadingState extends CartState {}
 class CartGetMoreLoadingState extends CartState {}
 
 class CartGetInitialDataState extends CartState {
-  final ApiResponse<List<CartFoodModel>> response;
+  final ApiResponse response;
   CartGetInitialDataState({required this.response});
 }
 

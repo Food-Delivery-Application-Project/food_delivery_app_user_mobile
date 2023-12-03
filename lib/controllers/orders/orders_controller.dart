@@ -14,19 +14,13 @@ class OrdersController {
   }) async {
     const url = "${AppUrl.baseUrl}/place-order";
     final userId = await UserSecureStorage.fetchUserId();
-
-    final response = await ApiManager.postRequest({
+    final body = {
       "userId": userId,
       "totalPrice": totalPrice,
       "address": address,
-    }, url);
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final body = jsonDecode(response.body);
-      return ApiResponse.fromJson(body, (p0) => null);
-    } else {
-      throw Exception(jsonDecode(response.body)['message']);
-    }
+    };
+    final response = await ApiManager.postRequest(body, url);
+    return ApiManager.returnModel(response);
   }
 
   static Future<ApiResponse<List<OrdersModel>>> getPlacedOrdersByUserId(
@@ -54,7 +48,6 @@ class OrdersController {
     List<CartFoodModel> list = [];
     final url = "${AppUrl.baseUrl}/get-allorder-item-byorderid/$orderId";
     final response = await ApiManager.getRequest(url);
-    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final foods = body['data'];

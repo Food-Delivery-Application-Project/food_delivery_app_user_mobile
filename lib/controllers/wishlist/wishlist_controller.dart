@@ -7,25 +7,14 @@ import 'package:food_delivery_app/models/wishlist/is_favorite_model.dart';
 import 'package:food_delivery_app/utils/api_manager.dart';
 
 class WishlistController {
-  static Future<ApiResponse<dynamic>> addOrRemoveItemToWishList(
+  static Future<ApiResponse> addOrRemoveItemToWishList(
     String userId,
     String foodId,
   ) async {
     const url = "${AppUrl.baseUrl}/add-or-remove-food-item-to-wishlist";
-    final response = await ApiManager.postRequest(
-      {"userId": userId, "foodId": foodId},
-      url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      return ApiResponse.fromJson(body, (p0) => null);
-    } else {
-      throw Exception(jsonDecode(response.body)['message']);
-    }
+    final body = {"userId": userId, "foodId": foodId};
+    final response = await ApiManager.postRequest(body, url);
+    return ApiManager.returnModel(response);
   }
 
   // wishlist foods IDs
@@ -47,19 +36,12 @@ class WishlistController {
     }
   }
 
-  static Future<ApiResponse<IsFavoriteModel>> isFavorite(
-    String userId,
-    String foodId,
-  ) async {
+  static Future<ApiResponse> isFavorite(String userId, String foodId) async {
     final url =
         "${AppUrl.baseUrl}/get-foodid-to-wishlist/?userId=$userId&foodId=$foodId";
     final response = await ApiManager.getRequest(url);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final body = jsonDecode(response.body);
-      final isFavoriteModel = IsFavoriteModel.fromJson(body['data']);
-      return ApiResponse.fromJson(body, (p0) => isFavoriteModel);
-    } else {
-      throw Exception(jsonDecode(response.body)['message']);
-    }
+    final body = jsonDecode(response.body);
+    final isFavoriteModel = IsFavoriteModel.fromJson(body['data']);
+    return ApiManager.returnModel(response, model: isFavoriteModel);
   }
 }

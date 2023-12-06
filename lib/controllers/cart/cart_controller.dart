@@ -29,12 +29,20 @@ class CartController {
     }
   }
 
-  static Future<ApiResponse> addToOrRemoveFromCart(
-      String userId, String foodId) async {
+  static Future<ApiResponse<dynamic>> addToOrRemoveFromCart(
+    String userId,
+    String foodId,
+  ) async {
     const url = "${AppUrl.baseUrl}/add-or-remove-food-item-addtocart";
     final body = {"userId": userId, "foodId": foodId};
     final response = await ApiManager.postRequest(body, url);
-    return ApiManager.returnModel(response);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+
+      return ApiResponse.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
   }
 
   static Future<Map<String, dynamic>> isInCart(
@@ -53,19 +61,32 @@ class CartController {
   }
 
   // Increment or decrement
-  static Future<ApiResponse> incrementQty(String userId, String foodId) async {
-    var id = await UserSecureStorage.fetchUserId();
+  static Future<ApiResponse<dynamic>> incrementQty(
+    String foodId,
+  ) async {
+    final userId = await UserSecureStorage.fetchUserId();
     final url =
-        "${AppUrl.baseUrl}/food-item-addtocart-quantity-inc?userId=$id&foodId=$foodId";
+        "${AppUrl.baseUrl}/food-item-addtocart-quantity-inc?userId=$userId&foodId=$foodId";
     final response = await ApiManager.bodyLessPut(url);
-    return ApiManager.returnModel(response);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
   }
 
-  static Future<ApiResponse> decrementQty(String userId, String foodId) async {
+  static Future<ApiResponse<dynamic>> decrementQty(String foodId) async {
     var id = await UserSecureStorage.fetchUserId();
     final url =
         "${AppUrl.baseUrl}/food-item-addtocart-quantity-dec?userId=$id&foodId=$foodId";
     final response = await ApiManager.bodyLessPut(url);
-    return ApiManager.returnModel(response);
+    print(response.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      return ApiResponse<dynamic>.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
   }
 }

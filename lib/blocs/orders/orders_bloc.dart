@@ -36,15 +36,14 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
         if (networkStatus) {
           final response = await OrdersController.getPlacedOrdersByUserId(
             page: 1,
-            paginatedBy: 10,
+            paginatedBy: 20,
           );
           emit(OrdersGetInitialDataState(response: response));
         } else {
           emit(OrdersErrorState(message: "No Internet Connection"));
         }
       } catch (_) {
-        // throw some beautiful non technical error message
-        throw Exception("Something went wrong");
+        emit(OrdersErrorState(message: _.toString()));
       }
     });
 

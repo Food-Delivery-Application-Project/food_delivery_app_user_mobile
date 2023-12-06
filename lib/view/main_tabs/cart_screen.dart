@@ -53,7 +53,6 @@ class _CartScreenState extends State<CartScreen> {
     currentIndex = index;
     context.read<CartBloc>().add(
           CartIncrementQtyEvent(
-            userId: userId.toString(),
             foodId: foodList[index].foodId!.sId.toString(),
           ),
         );
@@ -68,7 +67,6 @@ class _CartScreenState extends State<CartScreen> {
       currentIndex = index;
       context.read<CartBloc>().add(
             CartDecrementQtyEvent(
-              userId: userId.toString(),
               foodId: foodList[index].foodId!.sId.toString(),
             ),
           );

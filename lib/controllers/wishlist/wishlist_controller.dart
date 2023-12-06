@@ -12,9 +12,14 @@ class WishlistController {
     String foodId,
   ) async {
     const url = "${AppUrl.baseUrl}/add-or-remove-food-item-to-wishlist";
-    final body = {"userId": userId, "foodId": foodId};
-    final response = await ApiManager.postRequest(body, url);
-    return ApiManager.returnModel(response);
+    final response =
+        await ApiManager.postRequest({"userId": userId, "foodId": foodId}, url);
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return ApiResponse.fromJson(body, (p0) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
   }
 
   // wishlist foods IDs

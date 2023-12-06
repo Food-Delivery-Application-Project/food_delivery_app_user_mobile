@@ -10,37 +10,106 @@ import 'package:food_delivery_app/utils/api_manager.dart';
 import 'package:http/http.dart';
 
 abstract class AuthController {
-  static Future<ApiResponse> register(String email, String password) async {
+  static Future<ApiResponse<SignUpModel>> register(
+      String email, String password) async {
     const url = AuthUrl.register;
-    final body = {'email': email, 'password': password};
-    final response = await ApiManager.postRequest(body, url);
-    final responseBody = jsonDecode(response.body);
-    final model = SignUpModel.fromJson(responseBody['data']);
-    return ApiManager.returnModel(response, model: model);
+    try {
+      final response = await ApiManager.postRequest({
+        'email': email,
+        'password': password,
+      }, url);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+
+        ApiResponse<SignUpModel> model = ApiResponse<SignUpModel>.fromJson(
+          body,
+          (data) => SignUpModel.fromJson(body['data']),
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
+    } catch (_) {
+      rethrow;
+    }
   }
 
-  static Future<ApiResponse> sendOtp(String email) async {
+  static Future<ApiResponse<OtpModel>> sendOtp(String email) async {
     const url = AuthUrl.resendVerificationMail;
-    final response = await ApiManager.postRequest({"email": email}, url);
-    final body = jsonDecode(response.body);
-    final model = OtpModel.fromJson(body['data']);
-    return ApiManager.returnModel(response, model: model);
+
+    try {
+      final response = await ApiManager.postRequest(
+        {"email": email},
+        url,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+
+        ApiResponse<OtpModel> model = ApiResponse.fromJson(
+          body,
+          (data) => OtpModel.fromJson(body['data']),
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
+    } catch (_) {
+      rethrow;
+    }
   }
 
-  static Future<ApiResponse> verifyOtp(String email, String otp) async {
+  static Future<ApiResponse<dynamic>> verifyOtp(
+      String email, String otp) async {
     const url = AuthUrl.verifyOtp;
-    final body = {"email": email, "code": otp};
-    final response = await ApiManager.postRequest(body, url);
-    return ApiManager.returnModel(response);
+
+    try {
+      final response = await ApiManager.postRequest(
+        {"email": email, "code": otp},
+        url,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+
+        ApiResponse<dynamic> model = ApiResponse.fromJson(
+          body,
+          (data) => null,
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
+    } catch (_) {
+      rethrow;
+    }
   }
 
-  static Future<ApiResponse> login(String email, String password) async {
+  static Future<ApiResponse<LoginModel>> login(
+      String email, String password) async {
     const url = AuthUrl.login;
-    final body = {"email": email, "password": password};
-    final response = await ApiManager.postRequest(body, url);
-    final responseBody = jsonDecode(response.body);
-    final model = LoginModel.fromJson(responseBody['data']);
-    return ApiManager.returnModel(response, model: model);
+
+    try {
+      final response = await ApiManager.postRequest(
+        {"email": email, "password": password},
+        url,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var body = jsonDecode(response.body);
+        ApiResponse<LoginModel> model = ApiResponse.fromJson(
+          body,
+          (data) => LoginModel.fromJson(body['data']),
+        );
+        return model;
+      } else {
+        final data = jsonDecode(response.body);
+        throw Exception(data["message"]);
+      }
+    } catch (_) {
+      rethrow;
+    }
   }
 
   static Future<ApiResponse<dynamic>> completeProfile({
@@ -53,7 +122,6 @@ abstract class AuthController {
         'PUT',
         Uri.parse(url),
       );
-
       request.headers.addAll({"authorization": "Bearer ${user.pushToken}"});
 
       // send the file as a part of the request
@@ -93,41 +161,4 @@ abstract class AuthController {
       rethrow;
     }
   }
-
-  // static Future<AuthModel> sendVerificaionMailForPasswordChange(
-  //   String email,
-  // ) async {
-  //   // get the token from local database
-  //   final token = await UserSecureStorage.fetchToken();
-  //   final url = "${AuthUrl.sendVerificationMailForPasswordReset}/$email";
-  //   final response =
-  //       await ApiManager.bodyLessPost(url, headers: <String, String>{
-  //     "Authorization": token.toString(),
-  //     "Intent": "Reset-Password",
-  //     "Content-Type": "application/json"
-  //   });
-  //   return _getResponse(response);
-  // }
-
-  // static Future<AuthModel> changePassword(
-  //   String userId,
-  //   String password,
-  // ) async {
-  //   const url = AuthUrl.changePassword;
-  //   // get the token from local database
-  //   final token = await UserSecureStorage.fetchToken();
-
-  //   try {
-  //     final response = await ApiManager.putRequest(
-  //         {"userId": userId, "password": password}, url,
-  //         headers: <String, String>{
-  //           "Content-Type": "application/json",
-  //           "Authorization": token.toString(),
-  //         });
-
-  //     return _getResponse(response);
-  //   } catch (_) {
-  //     rethrow;
-  //   }
-  // }
 }

@@ -71,8 +71,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       try {
         bool networkStatus = await isNetworkAvailable();
         if (networkStatus) {
-          final response =
-              await CartController.incrementQty(event.userId, event.foodId);
+          final response = await CartController.incrementQty(event.foodId);
           emit(CartIncrementQtyState(response: response));
         } else {
           emit(CartIncrementQtyErrorState());
@@ -86,10 +85,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       try {
         bool networkStatus = await isNetworkAvailable();
         if (networkStatus) {
-          final response = await CartController.decrementQty(
-            event.userId,
-            event.foodId,
-          );
+          final response = await CartController.decrementQty(event.foodId);
           emit(CartDecrementQtyState(response: response));
         } else {
           emit(CartDecrementQtyErrorState());

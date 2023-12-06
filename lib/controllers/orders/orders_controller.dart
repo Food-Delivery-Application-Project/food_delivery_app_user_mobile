@@ -20,24 +20,27 @@ class OrdersController {
       "address": address,
     };
     final response = await ApiManager.postRequest(body, url);
-    return ApiManager.returnModel(response);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+      return ApiResponse.fromJson(body, (data) => null);
+    } else {
+      throw Exception(jsonDecode(response.body)['message']);
+    }
   }
 
   static Future<ApiResponse<List<OrdersModel>>> getPlacedOrdersByUserId(
       {required int page, required int paginatedBy}) async {
     final userId = await UserSecureStorage.fetchUserId();
+    List<OrdersModel> orders = [];
     final url =
         "${AppUrl.baseUrl}/get-order-by-userid/$userId?page=$page&pageSize=$paginatedBy";
-
     final response = await ApiManager.getRequest(url);
-    List<OrdersModel> orders = [];
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       body['data'].forEach((order) {
         orders.add(OrdersModel.fromJson(order));
       });
-      return ApiResponse.fromJson(body, (p0) => orders);
+      return ApiResponse.fromJson(body, (data) => orders);
     } else {
       throw Exception(jsonDecode(response.body)['message']);
     }
@@ -55,7 +58,7 @@ class OrdersController {
           .map<CartFoodModel>((item) => CartFoodModel.fromJson(item))
           .toList();
 
-      return ApiResponse.fromJson(body, (p0) => list);
+      return ApiResponse.fromJson(body, (data) => list);
     } else {
       throw Exception(jsonDecode(response.body)['message']);
     }

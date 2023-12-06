@@ -48,95 +48,95 @@ class _OrdersScreenState extends State<OrdersScreen> {
               child: LoadingWidget(),
             );
           } else if (state is OrdersErrorState) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(AppImages.four04),
-                  20.height,
-                  Text(
-                    state.message,
-                    style: boldTextStyle(),
-                  ),
-                  20.height,
-                  OutlinedButtonWidget(
-                    caption: "Reload Page",
-                    onPressed: () {
-                      ordersBloc.add(OrdersGetInitialDataEvent());
-                    },
-                  ),
-                ],
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(AppImages.four04),
+                    20.height,
+                    Text(
+                      state.message,
+                      style: boldTextStyle(),
+                    ),
+                    20.height,
+                    OutlinedButtonWidget(
+                      caption: "Reload Page",
+                      onPressed: () {
+                        ordersBloc.add(OrdersGetInitialDataEvent());
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {
-                return Container(
-                  child: Dismissible(
-                    background: Container(
-                      color: AppColors.dangerColor.withOpacity(0.1),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const Icon(
-                            Icons.delete,
-                            color: AppColors.dangerColor,
-                          ),
-                          10.width,
-                          Text(
-                            "Delete",
-                            style: boldTextStyle(color: AppColors.dangerColor),
-                          ),
-                          20.width,
-                        ],
-                      ),
+                return Dismissible(
+                  background: Container(
+                    color: AppColors.dangerColor.withOpacity(0.1),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Icon(
+                          Icons.delete,
+                          color: AppColors.dangerColor,
+                        ),
+                        10.width,
+                        Text(
+                          "Delete",
+                          style: boldTextStyle(color: AppColors.dangerColor),
+                        ),
+                        20.width,
+                      ],
                     ),
-                    onDismissed: (direction) {
-                      setState(() {
-                        orders.remove(orders[index]);
-                      });
+                  ),
+                  onDismissed: (direction) {
+                    setState(() {
+                      orders.remove(orders[index]);
+                    });
+                  },
+                  key: UniqueKey(),
+                  child: ListTile(
+                    onTap: () {
+                      AppNavigator.goToPage(
+                        context: context,
+                        screen: OrderFoodsScreen(
+                          orderId: orders[index].orderId.toString(),
+                        ),
+                      );
                     },
-                    key: UniqueKey(),
-                    child: ListTile(
-                      onTap: () {
-                        AppNavigator.goToPage(
-                          context: context,
-                          screen: OrderFoodsScreen(
-                            orderId: orders[index].orderId.toString(),
+                    tileColor: orders[index].status == "pending"
+                        ? AppColors.grey
+                        : AppColors.success.withOpacity(0.1),
+                    leading: const CircleAvatar(
+                      backgroundImage: AssetImage(AppImages.logoTrans),
+                    ),
+                    title: Text(
+                      "Total Price: ${orders[index].totalPrice}",
+                      style: AppTextStyle.listTileTitle,
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Address: ${orders[index].address}"),
+                        Text("ID: ${orders[index].orderId?.substring(20)}"),
+                      ],
+                    ),
+                    trailing: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text("${orders[index].status}"),
+                        Text(
+                          timeago.format(
+                            DateTime.parse(orders[index].createdAt.toString()),
                           ),
-                        );
-                      },
-                      tileColor: orders[index].status == "pending"
-                          ? AppColors.grey
-                          : AppColors.success.withOpacity(0.1),
-                      leading: const CircleAvatar(
-                        backgroundImage: AssetImage(AppImages.logoTrans),
-                      ),
-                      title: Text(
-                        "Total Price: ${orders[index].totalPrice}",
-                        style: AppTextStyle.listTileTitle,
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Address: ${orders[index].address}"),
-                          Text("ID: ${orders[index].orderId?.substring(20)}"),
-                        ],
-                      ),
-                      trailing: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text("${orders[index].status}"),
-                          Text(
-                            timeago.format(
-                              DateTime.parse(
-                                  orders[index].createdAt.toString()),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );

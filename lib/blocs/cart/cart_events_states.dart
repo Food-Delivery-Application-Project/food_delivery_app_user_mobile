@@ -41,17 +41,13 @@ class CartIsInCartEvent extends CartEvent {
 // Increment and decrement cart quantity
 
 class CartIncrementQtyEvent extends CartEvent {
-  String userId, foodId;
-  CartIncrementQtyEvent({
-    required this.userId,
-    required this.foodId,
-  });
+  String foodId;
+  CartIncrementQtyEvent({required this.foodId});
 }
 
 class CartDecrementQtyEvent extends CartEvent {
-  String userId, foodId;
+  String foodId;
   CartDecrementQtyEvent({
-    required this.userId,
     required this.foodId,
   });
 }

@@ -55,19 +55,18 @@ class CartFoodModel {
   CartFoodModel({this.foodId, this.status, this.quantity});
 
   CartFoodModel.fromJson(Map<String, dynamic> json) {
-    foodId =
-        json['foodId'] != null ? new FoodId.fromJson(json['foodId']) : null;
+    foodId = json['foodId'] != null ? FoodId.fromJson(json['foodId']) : null;
     status = json['status'];
     quantity = json['quantity'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.foodId != null) {
-      data['foodId'] = this.foodId!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (foodId != null) {
+      data['foodId'] = foodId!.toJson();
     }
-    data['status'] = this.status;
-    data['quantity'] = this.quantity;
+    data['status'] = status;
+    data['quantity'] = quantity;
     return data;
   }
 }
@@ -107,16 +106,16 @@ class FoodId {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['foodName'] = this.foodName;
-    data['price'] = this.price;
-    data['description'] = this.description;
-    data['categoryId'] = this.categoryId;
-    data['image'] = this.image;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['__v'] = this.iV;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['foodName'] = foodName;
+    data['price'] = price;
+    data['description'] = description;
+    data['categoryId'] = categoryId;
+    data['image'] = image;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['__v'] = iV;
     return data;
   }
 }

@@ -169,7 +169,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                       itemBuilder: (context, index) =>
                                           const Icon(
                                         Icons.star,
-                                        color: Colors.amber,
+                                        color: AppColors.primaryShade,
                                       ),
                                       itemCount: 5,
                                       itemSize: 20.0,

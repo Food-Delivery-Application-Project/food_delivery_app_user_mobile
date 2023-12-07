@@ -81,7 +81,6 @@ class CartController {
     final url =
         "${AppUrl.baseUrl}/food-item-addtocart-quantity-dec?userId=$id&foodId=$foodId";
     final response = await ApiManager.bodyLessPut(url);
-    print(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       return ApiResponse<dynamic>.fromJson(body, (p0) => null);

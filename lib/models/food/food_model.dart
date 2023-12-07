@@ -1,5 +1,5 @@
 class FoodModel {
-  String? sId;
+  String? foodId;
   String? foodName;
   int? price;
   String? description;
@@ -10,7 +10,7 @@ class FoodModel {
   int? iV;
 
   FoodModel(
-      {this.sId,
+      {this.foodId,
       this.foodName,
       this.price,
       this.description,
@@ -21,7 +21,7 @@ class FoodModel {
       this.iV});
 
   FoodModel.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
+    foodId = json['_id'];
     foodName = json['foodName'];
     price = json['price'];
     description = json['description'];
@@ -34,7 +34,7 @@ class FoodModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = sId;
+    data['_id'] = foodId;
     data['foodName'] = foodName;
     data['price'] = price;
     data['description'] = description;

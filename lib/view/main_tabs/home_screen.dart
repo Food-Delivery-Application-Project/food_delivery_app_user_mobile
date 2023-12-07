@@ -36,6 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
       onRefresh: () async {
         context.read<AllCategoriesBloc>().add(GetAllCategoriesEvent());
         context.read<FoodBloc>().add(RandomFoodEvent());
+        context.read<WishlistBloc>().add(WishlistGetInitialDataEvent(
+              userId: UserSecureStorage.fetchUserId().toString(),
+              page: 1,
+              paginatedBy: 20,
+            ));
       },
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -208,8 +213,6 @@ class FavoriteFoods extends StatefulWidget {
 }
 
 class _FavoriteFoodsState extends State<FavoriteFoods> {
-  WishlistBloc wishlistBloc = WishlistBloc();
-
   // Wishlist pagination
   int wishlistPage = 1;
   int wishlistPaginatedBy = 20;
@@ -235,28 +238,27 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
 
   wishlistGetInitialData() {
     UserSecureStorage.fetchUserId().then((value) {
-      wishlistBloc.add(WishlistGetInitialDataEvent(
-        userId: value.toString(),
-        page: wishlistPage,
-        paginatedBy: wishlistPaginatedBy,
-      ));
+      context.read<WishlistBloc>().add(WishlistGetInitialDataEvent(
+            userId: value.toString(),
+            page: wishlistPage,
+            paginatedBy: wishlistPaginatedBy,
+          ));
     });
   }
 
   wishlistGetMoreData() {
     UserSecureStorage.fetchUserId().then((value) {
-      wishlistBloc.add(WishlistGetMoreDataEvent(
-        userId: value.toString(),
-        page: wishlistPage,
-        paginatedBy: wishlistPaginatedBy,
-      ));
+      context.read<WishlistBloc>().add(WishlistGetMoreDataEvent(
+            userId: value.toString(),
+            page: wishlistPage,
+            paginatedBy: wishlistPaginatedBy,
+          ));
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WishlistBloc, WishlistState>(
-      bloc: wishlistBloc,
       listener: (context, state) {
         if (state is WishlistInitialLoadedState) {
           foods.addAll(state.foods.data);
@@ -272,7 +274,8 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
             child: ListView.builder(
               controller: scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: 10,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 5,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return Container(

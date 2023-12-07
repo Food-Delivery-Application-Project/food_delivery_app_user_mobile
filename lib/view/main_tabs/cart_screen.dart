@@ -120,15 +120,19 @@ class _CartScreenState extends State<CartScreen> {
         } else if (state is CartUpdateQtyLoadingState) {
           // update quantity
         } else if (state is CartIncrementQtyErrorState) {
-          foodQuantity[currentIndex]['quantity']--;
+          setState(() {
+            foodQuantity[currentIndex]['quantity']--;
+          });
         } else if (state is CartDecrementQtyErrorState) {
-          foodQuantity[currentIndex]['quantity']++;
+          setState(() {
+            foodQuantity[currentIndex]['quantity']++;
+          });
         } else if (state is CartIncrementQtyState) {
           // update quantity
-          print('value incremented');
         } else if (state is CartDecrementQtyState) {
           // update quantity
-          print('value decremented');
+        } else if (state is CartInitialLoadingState) {
+          foodList.clear();
         }
       },
       builder: (context, state) {

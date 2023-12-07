@@ -1,14 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_dialogs.dart';
+import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_snackbars.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
+import 'package:food_delivery_app/view/rating_and_reviews/rating_reviews_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/buttons/outlined_button.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
@@ -48,7 +51,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     wishlistBloc.add(
       WishlistIsfavoriteEvent(
         userId: userId.toString(),
-        foodId: widget.food.sId.toString(),
+        foodId: widget.food.foodId.toString(),
       ),
     );
   }
@@ -57,7 +60,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     cartBloc.add(
       CartIsInCartEvent(
         userId: userId.toString(),
-        foodId: widget.food.sId.toString(),
+        foodId: widget.food.foodId.toString(),
       ),
     );
   }
@@ -66,7 +69,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     cartBloc.add(
       CartAddtoOrRemoveFromEvent(
         userId: userId.toString(),
-        foodId: widget.food.sId.toString(),
+        foodId: widget.food.foodId.toString(),
       ),
     );
   }
@@ -100,7 +103,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         return Scaffold(
           appBar: BackAppbarWidget(title: widget.food.foodName),
           bottomNavigationBar: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: isInCart == null
                 ? const LoadingWidget()
                 : isInCart == true
@@ -148,10 +151,32 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                widget.food.foodName.toString(),
-                                style: AppTextStyle.headings,
-                                textAlign: TextAlign.left,
+                              GestureDetector(
+                                onTap: () {
+                                  // navigate to reviews and rating screen
+                                  AppNavigator.goToPage(
+                                    context: context,
+                                    screen: RatingReviewsScreen(
+                                      foodId: widget.food.foodId.toString(),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    const Text("Reviews:"),
+                                    RatingBarIndicator(
+                                      rating: 2.75,
+                                      itemBuilder: (context, index) =>
+                                          const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                      itemCount: 5,
+                                      itemSize: 20.0,
+                                      direction: Axis.horizontal,
+                                    ),
+                                  ],
+                                ),
                               ),
                               isLoading == true
                                   ? const LoadingWidget()
@@ -169,8 +194,8 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                             wishlistBloc.add(
                                               WishlistAddOrRemoveEvent(
                                                 userId: userId.toString(),
-                                                foodId:
-                                                    widget.food.sId.toString(),
+                                                foodId: widget.food.foodId
+                                                    .toString(),
                                               ),
                                             );
                                           },
@@ -195,7 +220,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                           ),
                                         ),
                                       ],
-                                    )
+                                    ),
                             ],
                           ),
                           10.height,

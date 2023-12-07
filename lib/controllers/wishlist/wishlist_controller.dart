@@ -5,6 +5,7 @@ import 'package:food_delivery_app/models/api_response.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/models/wishlist/is_favorite_model.dart';
 import 'package:food_delivery_app/utils/api_manager.dart';
+import 'package:food_delivery_app/utils/secure_storage.dart';
 
 class WishlistController {
   static Future<ApiResponse> addOrRemoveItemToWishList(
@@ -16,15 +17,16 @@ class WishlistController {
         await ApiManager.postRequest({"userId": userId, "foodId": foodId}, url);
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      return ApiResponse.fromJson(body, (p0) => null);
+      return ApiResponse.fromJson(body, (data) => null);
     } else {
       throw Exception(jsonDecode(response.body)['message']);
     }
   }
 
   // wishlist foods IDs
-  static Future<ApiResponse<List<FoodModel>>> getWishlistFoods(String userId,
+  static Future<ApiResponse<List<FoodModel>>> getWishlistFoods(
       {required int page, required int paginatedBy}) async {
+    final userId = await UserSecureStorage.fetchUserId();
     final url =
         "${AppUrl.baseUrl}/get-food-item-to-wishlist/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
@@ -35,7 +37,7 @@ class WishlistController {
       body['data'].forEach((food) {
         foods.add(FoodModel.fromJson(food));
       });
-      return ApiResponse.fromJson(body, (p0) => foods);
+      return ApiResponse.fromJson(body, (data) => foods);
     } else {
       throw Exception(jsonDecode(response.body)['message']);
     }

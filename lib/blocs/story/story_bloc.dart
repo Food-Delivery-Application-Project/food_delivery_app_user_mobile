@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_delivery_app/controllers/stories/stories_controller.dart';
 import 'package:food_delivery_app/models/api_response.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -13,6 +14,8 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
           var networkStatus = await isNetworkAvailable();
           if (networkStatus) {
             // APi logic
+            final response = await StoriesController.fetchAllStories();
+            emit(StoryGetAllState(response: response));
           } else {
             emit(StoryErrorState(message: "No Internet Connection"));
           }

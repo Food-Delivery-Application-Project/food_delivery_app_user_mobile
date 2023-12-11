@@ -88,7 +88,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         ),
                         10.width,
                         Text(
-                          "Delete",
+                          "Cancel Order",
                           style: boldTextStyle(color: AppColors.dangerColor),
                         ),
                         20.width,
@@ -113,8 +113,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     tileColor: orders[index].status == "pending"
                         ? AppColors.grey
                         : AppColors.success.withOpacity(0.1),
-                    leading: const CircleAvatar(
-                      backgroundImage: AssetImage(AppImages.logoTrans),
+                    leading: CircleAvatar(
+                      radius: 30,
+                      // last 4 digits order id
+                      child: Text("${orders[index].orderId?.substring(0, 4)}"),
                     ),
                     title: Text(
                       "Total Price: ${orders[index].totalPrice}",
@@ -124,7 +126,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Address: ${orders[index].address}"),
-                        Text("ID: ${orders[index].orderId?.substring(20)}"),
+                        Text("Phone: ${orders[index].user?.phone}"),
                       ],
                     ),
                     trailing: Column(

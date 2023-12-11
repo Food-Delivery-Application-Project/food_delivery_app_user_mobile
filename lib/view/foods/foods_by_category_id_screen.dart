@@ -34,16 +34,19 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
   @override
   void initState() {
     initData();
-    // add scroll listner and increase page size when we reach at the bottom
+    scrollControl();
+    super.initState();
+  }
+
+  scrollControl() {
+// add scroll listner and increase page size when we reach at the bottom
     scrollController.addListener(() {
-      if (scrollController.position.maxScrollExtent -
-              scrollController.position.pixels <=
-          400) {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
         page++;
         moreData();
       }
     });
-    super.initState();
   }
 
   initData() {
@@ -58,6 +61,13 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
       ..add(
         FoodGetMoreByCategoryIdEvent(widget.categoryId, page, paginatedBy),
       );
+  }
+
+  @override
+  void dispose() {
+    foodBloc.close();
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override

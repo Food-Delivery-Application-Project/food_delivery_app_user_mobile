@@ -38,7 +38,7 @@ class OrdersModel {
 }
 
 class User {
-  int? phone;
+  String? phone;
   String? profileImage;
   String? fullname;
 

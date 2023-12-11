@@ -1,15 +1,17 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
+import 'package:food_delivery_app/blocs/story/story_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
-import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
+import 'package:food_delivery_app/models/story/story_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/view/main_tabs/wishlist_screen.dart';
@@ -63,49 +65,72 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class StoriesWidget extends StatelessWidget {
+class StoriesWidget extends StatefulWidget {
   const StoriesWidget({Key? key}) : super(key: key);
+
+  @override
+  State<StoriesWidget> createState() => _StoriesWidgetState();
+}
+
+class _StoriesWidgetState extends State<StoriesWidget> {
+  StoryBloc storyBloc = StoryBloc();
+  List<StoryModel> stories = [];
+
+  @override
+  void initState() {
+    storyBloc.add(StoryGetAllEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const HeadingWidget(
-          headingText: "What's New",
-          isViewAll: false,
-        ),
+        const HeadingWidget(headingText: "What's New", isViewAll: false),
         10.height,
-        SizedBox(
-          height: 80.h,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.only(right: 10),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      // make story circular
-                      shape: BoxShape.circle,
-                      // add border to story
-                      border: Border.all(color: AppColors.primary, width: 2),
-                      // add image to story
-                      image: const DecorationImage(
-                        image: AssetImage(AppImages.logoTrans),
-                        fit: BoxFit.cover,
+        BlocListener<StoryBloc, StoryState>(
+          bloc: storyBloc,
+          listener: (context, state) {
+            if (state is StoryGetAllState) {
+              stories.addAll(state.response.data);
+            }
+          },
+          child: SizedBox(
+            height: 80.h,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: stories.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // make story circular
+                        shape: BoxShape.circle,
+                        // add border to story
+                        border: Border.all(color: AppColors.primary, width: 2),
+                        // add image to story
+                        image: DecorationImage(
+                          image: CachedNetworkImageProvider(
+                            stories[index].foodId!.image.toString(),
+                          ),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         const AppDivider(),
       ],
-    );
+    ).visible(stories.isNotEmpty);
   }
 }
 

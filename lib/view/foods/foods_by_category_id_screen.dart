@@ -24,15 +24,39 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
 
   // pagination variables
   int page = 1;
-  int paginatedBy = 10;
+  int paginatedBy = 8;
+
+  ScrollController scrollController = ScrollController();
+
+  List<FoodModel> foods = [];
 
   @override
   void initState() {
+    initData();
+    // add scroll listner and increase page size when we reach at the bottom
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent -
+              scrollController.position.pixels <=
+          400) {
+        page++;
+        moreData();
+      }
+    });
+    super.initState();
+  }
+
+  initData() {
     foodBloc = foodBloc
       ..add(
         FoodGetByCategoryIdEvent(widget.categoryId, page, paginatedBy),
       );
-    super.initState();
+  }
+
+  moreData() {
+    foodBloc = foodBloc
+      ..add(
+        FoodGetMoreByCategoryIdEvent(widget.categoryId, page, paginatedBy),
+      );
   }
 
   @override
@@ -50,7 +74,13 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          child: BlocBuilder(
+          controller: scrollController,
+          child: BlocConsumer(
+            listener: (context, state) {
+              if (state is FoodLoadedState) {
+                foods.addAll(state.foodList.data);
+              }
+            },
             bloc: foodBloc,
             builder: (context, state) {
               if (state is FoodLoadingState) {
@@ -65,33 +95,21 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
                 return Center(
                   child: Text(state.message),
                 );
-              } else if (state is FoodLoadedState) {
+              } else {
                 return Column(
                   children: [
                     GridView.builder(
                       gridDelegate: AppGridDelegate.foodItems,
                       itemBuilder: (context, index) => FoodItem(
-                        foodModel: state.foodList.data[index],
+                        foodModel: foods[index],
                       ),
-                      itemCount: state.foodList.data.length,
+                      itemCount: foods.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                     )
                   ],
                 );
               }
-              return Column(
-                children: [
-                  GridView.builder(
-                    gridDelegate: AppGridDelegate.foodItems,
-                    itemBuilder: (context, index) =>
-                        FoodItem(foodModel: FoodModel()),
-                    itemCount: 4,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                  )
-                ],
-              );
             },
           ),
         ),

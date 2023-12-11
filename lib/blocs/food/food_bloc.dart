@@ -29,6 +29,26 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       }
     });
 
+    on<FoodGetMoreByCategoryIdEvent>((event, emit) async {
+      emit(FoodMoreLoadingState());
+      try {
+        bool networkStatus = await isNetworkAvailable();
+        if (networkStatus) {
+          final ApiResponse<List<FoodModel>> foods =
+              await FoodController.getFoodItemByCategoryId(
+            event.categoryId,
+            page: event.page,
+            paginatedBy: event.paginatedBy,
+          );
+          emit(FoodLoadedState(foods));
+        } else {
+          emit(FoodErrorState("No Internet Connection"));
+        }
+      } catch (error) {
+        emit(FoodErrorState(error.toString()));
+      }
+    });
+
     on<RandomFoodEvent>((event, emit) async {
       emit(FoodLoadingState());
       try {

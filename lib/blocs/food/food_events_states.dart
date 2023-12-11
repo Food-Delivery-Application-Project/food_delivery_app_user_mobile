@@ -8,12 +8,19 @@ class FoodGetByCategoryIdEvent extends FoodEvent {
   FoodGetByCategoryIdEvent(this.categoryId, this.page, this.paginatedBy);
 }
 
+class FoodGetMoreByCategoryIdEvent extends FoodEvent {
+  int categoryId, page, paginatedBy;
+  FoodGetMoreByCategoryIdEvent(this.categoryId, this.page, this.paginatedBy);
+}
+
 //States
 abstract class FoodState {}
 
 class FoodInitialState extends FoodState {}
 
 class FoodLoadingState extends FoodState {}
+
+class FoodMoreLoadingState extends FoodState {}
 
 class FoodLoadedState extends FoodState {
   ApiResponse<List<FoodModel>> foodList;

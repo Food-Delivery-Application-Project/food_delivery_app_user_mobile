@@ -103,6 +103,7 @@ class StoriesWidget extends StatelessWidget {
             },
           ),
         ),
+        const AppDivider(),
       ],
     );
   }

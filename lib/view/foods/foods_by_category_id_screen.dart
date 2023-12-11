@@ -7,6 +7,7 @@ import 'package:food_delivery_app/widgets/appbars/two_buttons_appbar.dart';
 import 'package:food_delivery_app/widgets/foods/food_item_widget.dart';
 import 'package:food_delivery_app/widgets/loading/loading_widget.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class FoodByCategoryIdScreen extends StatefulWidget {
   final int categoryId;
@@ -100,13 +101,19 @@ class _FoodByCategoryIdScreenState extends State<FoodByCategoryIdScreen> {
                   children: [
                     GridView.builder(
                       gridDelegate: AppGridDelegate.foodItems,
-                      itemBuilder: (context, index) => FoodItem(
-                        foodModel: foods[index],
-                      ),
+                      itemBuilder: (context, index) {
+                        return FoodItem(
+                          foodModel: foods[index],
+                        );
+                      },
                       itemCount: foods.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                    )
+                    ),
+                    if (state is FoodMoreLoadingState) ...[
+                      30.height,
+                      const LoadingWidget(),
+                    ]
                   ],
                 );
               }

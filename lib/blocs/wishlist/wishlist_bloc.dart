@@ -33,8 +33,8 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
         bool networkStatus = await isNetworkAvailable();
         if (networkStatus) {
           final foods = await WishlistController.getWishlistFoods(
-            page: event.page,
-            paginatedBy: event.paginatedBy,
+            page: 1,
+            paginatedBy: 2,
           );
           emit(WishlistInitialLoadedState(foods: foods));
         } else {

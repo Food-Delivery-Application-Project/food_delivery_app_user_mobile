@@ -44,13 +44,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   }
 
   getInitailData() {
-    UserSecureStorage.fetchUserId().then((value) {
-      wishlistBloc.add(WishlistGetInitialDataEvent(
-        userId: value.toString(),
-        page: page,
-        paginatedBy: paginatedBy,
-      ));
-    });
+    wishlistBloc.add(WishlistGetInitialDataEvent());
   }
 
   getMoreData() {

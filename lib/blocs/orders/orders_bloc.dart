@@ -25,7 +25,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
         }
       } catch (_) {
         // throw some beautiful non technical error message
-        throw Exception("Something went wrong");
+        emit(OrdersErrorState(message: _.toString()));
       }
     });
 

@@ -7,10 +7,11 @@ import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/global/assets/app_assets.dart';
+import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
-import 'package:food_delivery_app/utils/secure_storage.dart';
 import 'package:food_delivery_app/view/main_tabs/wishlist_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
@@ -36,11 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onRefresh: () async {
         context.read<AllCategoriesBloc>().add(GetAllCategoriesEvent());
         context.read<FoodBloc>().add(RandomFoodEvent());
-        context.read<WishlistBloc>().add(WishlistGetInitialDataEvent(
-              userId: UserSecureStorage.fetchUserId().toString(),
-              page: 1,
-              paginatedBy: 20,
-            ));
+        context.read<WishlistBloc>().add(WishlistGetInitialDataEvent());
       },
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -48,23 +45,65 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const StoriesWidget(),
+              20.height,
               const RandomCategoryItemWidget(),
               20.height,
               const FoodCategories(),
               20.height,
-              // Random foods
-
               const RandomFoods(),
               20.height,
-
-              // Favorites
-
               const FavoriteFoods(),
               40.height,
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class StoriesWidget extends StatelessWidget {
+  const StoriesWidget({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const HeadingWidget(
+          headingText: "What's New",
+          isViewAll: false,
+        ),
+        10.height,
+        SizedBox(
+          height: 80.h,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 10,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.only(right: 10),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      // make story circular
+                      shape: BoxShape.circle,
+                      // add border to story
+                      border: Border.all(color: AppColors.primary, width: 2),
+                      // add image to story
+                      image: const DecorationImage(
+                        image: AssetImage(AppImages.logoTrans),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -213,11 +252,7 @@ class FavoriteFoods extends StatefulWidget {
 }
 
 class _FavoriteFoodsState extends State<FavoriteFoods> {
-  // Wishlist pagination
-  int wishlistPage = 1;
-  int wishlistPaginatedBy = 20;
-
-  final List<FoodModel> foods = [];
+  List<FoodModel> foods = [];
 
   // scroll controller
   ScrollController scrollController = ScrollController();
@@ -237,32 +272,16 @@ class _FavoriteFoodsState extends State<FavoriteFoods> {
   }
 
   wishlistGetInitialData() {
-    UserSecureStorage.fetchUserId().then((value) {
-      context.read<WishlistBloc>().add(WishlistGetInitialDataEvent(
-            userId: value.toString(),
-            page: wishlistPage,
-            paginatedBy: wishlistPaginatedBy,
-          ));
-    });
+    context.read<WishlistBloc>().add(WishlistGetInitialDataEvent());
   }
 
-  wishlistGetMoreData() {
-    UserSecureStorage.fetchUserId().then((value) {
-      context.read<WishlistBloc>().add(WishlistGetMoreDataEvent(
-            userId: value.toString(),
-            page: wishlistPage,
-            paginatedBy: wishlistPaginatedBy,
-          ));
-    });
-  }
+  wishlistGetMoreData() {}
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WishlistBloc, WishlistState>(
       listener: (context, state) {
         if (state is WishlistInitialLoadedState) {
-          foods.addAll(state.foods.data);
-        } else if (state is WishlistGetMoreLoadedState) {
           foods.addAll(state.foods.data);
         }
       },

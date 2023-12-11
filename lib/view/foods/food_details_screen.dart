@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food_delivery_app/blocs/cart/cart_bloc.dart';
+import 'package:food_delivery_app/blocs/review/review_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
@@ -11,7 +11,7 @@ import 'package:food_delivery_app/utils/app_dialogs.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/utils/app_snackbars.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
-import 'package:food_delivery_app/view/rating_and_reviews/rating_reviews_screen.dart';
+import 'package:food_delivery_app/view/reviews/reviews_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/buttons/outlined_button.dart';
 import 'package:food_delivery_app/widgets/buttons/primary_button.dart';
@@ -36,6 +36,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   // Blocs
   WishlistBloc wishlistBloc = WishlistBloc();
   CartBloc cartBloc = CartBloc();
+  ReviewBloc ratingBloc = ReviewBloc();
 
   @override
   void initState() {
@@ -132,6 +133,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                   isFavorite = state.isFavorite;
                 } else if (state is WishlistAddOrRemoveSuccessState) {
                   AppSnackbars.normal(context, state.response.message);
+                  context
+                      .read<WishlistBloc>()
+                      .add(WishlistGetInitialDataEvent());
                 }
               },
               builder: (context, state) {
@@ -151,31 +155,21 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // navigate to reviews and rating screen
+                              TextButton(
+                                onPressed: () {
                                   AppNavigator.goToPage(
                                     context: context,
-                                    screen: RatingReviewsScreen(
+                                    screen: ReviewsScreen(
                                       foodId: widget.food.foodId.toString(),
                                     ),
                                   );
                                 },
-                                child: Column(
-                                  children: [
-                                    const Text("Reviews:"),
-                                    RatingBarIndicator(
-                                      rating: 2.75,
-                                      itemBuilder: (context, index) =>
-                                          const Icon(
-                                        Icons.star,
-                                        color: AppColors.primaryShade,
-                                      ),
-                                      itemCount: 5,
-                                      itemSize: 20.0,
-                                      direction: Axis.horizontal,
-                                    ),
-                                  ],
+                                child: Text(
+                                  "Show all reviews",
+                                  style: AppTextStyle.subHeading.copyWith(
+                                    color: AppColors.success,
+                                    decoration: TextDecoration.underline,
+                                  ),
                                 ),
                               ),
                               isLoading == true

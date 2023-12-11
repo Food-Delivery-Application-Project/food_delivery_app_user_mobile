@@ -8,10 +8,7 @@ class WishlistAddOrRemoveEvent extends WishlistEvent {
 }
 
 class WishlistGetInitialDataEvent extends WishlistEvent {
-  final String userId;
-  final int page, paginatedBy;
-  WishlistGetInitialDataEvent(
-      {required this.userId, required this.page, required this.paginatedBy});
+  WishlistGetInitialDataEvent();
 }
 
 class WishlistGetMoreDataEvent extends WishlistEvent {

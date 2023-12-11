@@ -30,7 +30,6 @@ class WishlistController {
     final url =
         "${AppUrl.baseUrl}/get-food-item-to-wishlist/$userId?page=$page&pageSize=$paginatedBy";
     final response = await ApiManager.getRequest(url);
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       final List<FoodModel> foods = [];

@@ -89,14 +89,14 @@ class _StoriesWidgetState extends State<StoriesWidget> {
       children: [
         const HeadingWidget(headingText: "What's New", isViewAll: false),
         10.height,
-        BlocListener<StoryBloc, StoryState>(
+        BlocConsumer<StoryBloc, StoryState>(
           bloc: storyBloc,
           listener: (context, state) {
             if (state is StoryGetAllState) {
               stories.addAll(state.response.data);
             }
           },
-          child: SizedBox(
+          builder: (context, state) => SizedBox(
             height: 80.h,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,

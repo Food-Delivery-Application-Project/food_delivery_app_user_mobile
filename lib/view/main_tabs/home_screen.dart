@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,12 +7,14 @@ import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/blocs/story/story_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 import 'package:food_delivery_app/constants/app_text_style.dart';
+import 'package:food_delivery_app/global/assets/app_assets.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/models/story/story_model.dart';
 import 'package:food_delivery_app/utils/app_builders.dart';
 import 'package:food_delivery_app/utils/app_navigator.dart';
 import 'package:food_delivery_app/view/main_tabs/wishlist_screen.dart';
+import 'package:food_delivery_app/view/story/story_screen.dart';
 import 'package:food_delivery_app/widgets/appbars/back_appbar_widget.dart';
 import 'package:food_delivery_app/widgets/category/category_widget.dart';
 import 'package:food_delivery_app/widgets/divider/app_divider.dart';
@@ -83,6 +83,12 @@ class _StoriesWidgetState extends State<StoriesWidget> {
   }
 
   @override
+  void dispose() {
+    storyBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,44 +99,88 @@ class _StoriesWidgetState extends State<StoriesWidget> {
           bloc: storyBloc,
           listener: (context, state) {
             if (state is StoryGetAllState) {
-              stories.addAll(state.response.data);
+              stories = state.response.data;
             }
           },
-          builder: (context, state) => SizedBox(
-            height: 80.h,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: stories.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        // make story circular
-                        shape: BoxShape.circle,
-                        // add border to story
-                        border: Border.all(color: AppColors.primary, width: 2),
-                        // add image to story
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(
-                            stories[index].foodId!.image.toString(),
+          builder: (context, state) {
+            if (state is StoryLoadingState) {
+              return SizedBox(
+                height: 80.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 6,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            // make story circular
+                            shape: BoxShape.circle,
+                            // add border to story
+                            border:
+                                Border.all(color: AppColors.primary, width: 2),
+                            // add image to story
+                            image: const DecorationImage(
+                              image: AssetImage(AppImages.logoTrans),
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+                    );
+                  },
+                ),
+              );
+            } else {
+              return SizedBox(
+                height: 80.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: stories.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        AppNavigator.goToPage(
+                          context: context,
+                          screen: StoryScreen(story: stories[index]),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              // make story circular
+                              shape: BoxShape.circle,
+                              // add border to story
+                              border: Border.all(
+                                  color: AppColors.primary, width: 2),
+                              // add image to story
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                  stories[index].foodId!.image.toString(),
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+          },
         ),
         const AppDivider(),
       ],
-    ).visible(stories.isNotEmpty);
+    );
   }
 }
 

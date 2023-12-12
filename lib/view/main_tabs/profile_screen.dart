@@ -85,8 +85,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: 35,
                             height: 35,
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: AppColors.primary),
+                              borderRadius: BorderRadius.circular(100),
+                              color: AppColors.primary,
+                            ),
                             child: const Icon(
                               Ionicons.pencil,
                               color: Colors.black,

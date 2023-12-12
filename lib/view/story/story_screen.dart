@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/blocs/story/story_bloc.dart';
+import 'package:food_delivery_app/controllers/stories/stories_controller.dart';
 import 'package:food_delivery_app/global/colors/app_colors.dart';
 import 'package:food_delivery_app/models/food/food_model.dart';
 import 'package:food_delivery_app/models/story/story_model.dart';
@@ -13,7 +15,9 @@ import 'package:nb_utils/nb_utils.dart';
 
 class StoryScreen extends StatefulWidget {
   final StoryModel story;
-  const StoryScreen({Key? key, required this.story}) : super(key: key);
+  final StoryBloc storyBloc;
+  const StoryScreen({Key? key, required this.story, required this.storyBloc})
+      : super(key: key);
 
   @override
   State<StoryScreen> createState() => _StoryScreenState();
@@ -28,6 +32,11 @@ class _StoryScreenState extends State<StoryScreen> {
   void initState() {
     super.initState();
     // Start the timer to update progress
+    if (widget.story.status == 0) {
+      StoriesController.updateStatus(widget.story.sId.toString()).then((value) {
+        widget.storyBloc.add(StoryGetAllEvent());
+      });
+    }
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         progressValue += 1.0 / durationInSeconds;
@@ -44,6 +53,13 @@ class _StoryScreenState extends State<StoryScreen> {
 
   route() {
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    // if a user goes back before time expires, then handle the event
+    _timer.cancel();
+    super.dispose();
   }
 
   @override

@@ -70,7 +70,7 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
         borderWidth: 3,
         borderColor: AppColors.primary,
         activeColor: AppColors.primary,
-        inactiveColor: AppColors.white,
+        inactiveColor: AppColors.lightBackground,
         backgroundColor: AppColors.darkBackground,
         notchSmoothness: NotchSmoothness.sharpEdge,
         leftCornerRadius: 36,

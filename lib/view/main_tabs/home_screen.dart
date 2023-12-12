@@ -120,8 +120,10 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                             // make story circular
                             shape: BoxShape.circle,
                             // add border to story
-                            border:
-                                Border.all(color: AppColors.primary, width: 2),
+                            border: Border.all(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
                             // add image to story
                             image: const DecorationImage(
                               image: AssetImage(AppImages.logoTrans),
@@ -146,7 +148,10 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                       onTap: () {
                         AppNavigator.goToPage(
                           context: context,
-                          screen: StoryScreen(story: stories[index]),
+                          screen: StoryScreen(
+                            story: stories[index],
+                            storyBloc: storyBloc,
+                          ),
                         );
                       },
                       child: Container(
@@ -159,7 +164,11 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                               shape: BoxShape.circle,
                               // add border to story
                               border: Border.all(
-                                  color: AppColors.primary, width: 2),
+                                color: stories[index].status == 1
+                                    ? AppColors.grey
+                                    : AppColors.success,
+                                width: 3,
+                              ),
                               // add image to story
                               image: DecorationImage(
                                 image: CachedNetworkImageProvider(

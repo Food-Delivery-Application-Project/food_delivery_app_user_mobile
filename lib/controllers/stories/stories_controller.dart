@@ -23,4 +23,17 @@ abstract class StoriesController {
       throw Exception(responseBody['message']);
     }
   }
+
+  static Future<ApiResponse> updateStatus(String storyId) async {
+    final url = "${AppUrl.baseUrl}/View/stores?_id=$storyId";
+    final response = await ApiManager.bodyLessPut(url);
+    final status = response.statusCode;
+    final responseBody = jsonDecode(response.body);
+
+    if (status == 200 || status == 201) {
+      return ApiResponse.fromJson(responseBody, (p0) => null);
+    } else {
+      throw Exception(responseBody['message']);
+    }
+  }
 }

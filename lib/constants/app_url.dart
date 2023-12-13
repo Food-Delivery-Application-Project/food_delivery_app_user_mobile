@@ -26,7 +26,7 @@ abstract class AuthUrl {
 }
 
 abstract class MediaUrl {
-  static final mediaService = "/media-service";
+  static const mediaService = "/media-service";
   static String baseUrl = AppUrl.liveBaseUrl + mediaService;
   static final uploadProfilePicture = "$baseUrl/media/profile";
 }

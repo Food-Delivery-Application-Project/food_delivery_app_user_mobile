@@ -36,7 +36,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     UserSecureStorage.fetchUserId().then((value) {
       userId = value;
-      print(userId);
     });
 
     UserSecureStorage.fetchToken().then((value) {

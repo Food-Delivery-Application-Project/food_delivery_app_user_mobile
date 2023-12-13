@@ -2,10 +2,10 @@
 
 A new Flutter project.
 
-![Screenshot_1702313012](https://github.com/Food-Delivery-Application-Project/food_delivery_app_user_mobile/assets/101446030/2646cd4b-80bc-4253-9346-41ed00f789fa)
-![Screenshot_1702313015](https://github.com/Food-Delivery-Application-Project/food_delivery_app_user_mobile/assets/101446030/dfcebbb3-5968-4906-af38-dd4409f6f4fc)
-![Screenshot_1702313024](https://github.com/Food-Delivery-Application-Project/food_delivery_app_user_mobile/assets/101446030/2d11eb5e-42ee-47e7-9699-b9cdef92eaf4)
-![Screenshot_1702313036](https://github.com/Food-Delivery-Application-Project/food_delivery_app_user_mobile/assets/101446030/ec68a34d-72d0-431e-8477-69fa61b8aa31)
+# SCREEN  SHOTS
+![gallery](https://github.com/Food-Delivery-Application-Project/food_delivery_app_user_mobile/assets/101446030/7f1a883a-6459-4499-aa3b-136e6a42168f)
+
+# VIDEO PREVIEW
 
 ## Getting Started
 

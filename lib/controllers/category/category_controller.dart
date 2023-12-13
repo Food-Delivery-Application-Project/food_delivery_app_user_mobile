@@ -9,7 +9,7 @@ class CategoryController {
   static Future<ApiResponse<List<CategoryModel>>> getAllCategories() async {
     List<CategoryModel> list = [];
 
-    const url = "${AppUrl.baseUrl}/get-catogray";
+    final url = "${AppUrl.baseUrl}/get-catogray";
     final response = await ApiManager.getRequest(url);
 
     if (response.statusCode == 200) {

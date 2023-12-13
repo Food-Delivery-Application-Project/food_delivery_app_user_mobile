@@ -34,7 +34,7 @@ class FoodController {
   static Future<ApiResponse<List<FoodModel>>> getRandomFoodsForSlider() async {
     List<FoodModel> list = [];
 
-    const url = "${AppUrl.baseUrl}/get-random-five-fooditem";
+    final url = "${AppUrl.baseUrl}/get-random-five-fooditem";
     final response = await ApiManager.getRequest(url);
 
     if (response.statusCode == 200) {

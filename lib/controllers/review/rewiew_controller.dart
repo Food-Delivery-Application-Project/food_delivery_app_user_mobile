@@ -9,7 +9,7 @@ import 'package:food_delivery_app/utils/secure_storage.dart';
 class ReviewController {
   static Future<ApiResponse> postReview(String foodId, String text) async {
     final userId = await UserSecureStorage.fetchUserId();
-    const url = "${AppUrl.baseUrl}/add/post/review";
+    final url = "${AppUrl.baseUrl}/add/post/review";
     final body = {"userId": userId, "foodId": foodId, "text": text};
     final response = await ApiManager.postRequest(body, url);
     if (response.statusCode == 200 || response.statusCode == 201) {

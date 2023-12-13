@@ -12,7 +12,7 @@ class OrdersController {
     required double totalPrice,
     required String address,
   }) async {
-    const url = "${AppUrl.baseUrl}/place-order";
+    final url = "${AppUrl.baseUrl}/place-order";
     final userId = await UserSecureStorage.fetchUserId();
     final body = {
       "userId": userId,

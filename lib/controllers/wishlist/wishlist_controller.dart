@@ -12,7 +12,7 @@ class WishlistController {
     String userId,
     String foodId,
   ) async {
-    const url = "${AppUrl.baseUrl}/add-or-remove-food-item-to-wishlist";
+    final url = "${AppUrl.baseUrl}/add-or-remove-food-item-to-wishlist";
     final response =
         await ApiManager.postRequest({"userId": userId, "foodId": foodId}, url);
     if (response.statusCode == 200) {

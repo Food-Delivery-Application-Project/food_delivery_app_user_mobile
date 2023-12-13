@@ -12,7 +12,7 @@ import 'package:http/http.dart';
 abstract class AuthController {
   static Future<ApiResponse<SignUpModel>> register(
       String email, String password) async {
-    const url = AuthUrl.register;
+    final url = AuthUrl.register;
     try {
       final response = await ApiManager.postRequest({
         'email': email,
@@ -36,7 +36,7 @@ abstract class AuthController {
   }
 
   static Future<ApiResponse<OtpModel>> sendOtp(String email) async {
-    const url = AuthUrl.resendVerificationMail;
+    final url = AuthUrl.resendVerificationMail;
 
     try {
       final response = await ApiManager.postRequest(
@@ -63,7 +63,7 @@ abstract class AuthController {
 
   static Future<ApiResponse<dynamic>> verifyOtp(
       String email, String otp) async {
-    const url = AuthUrl.verifyOtp;
+    final url = AuthUrl.verifyOtp;
 
     try {
       final response = await ApiManager.postRequest(
@@ -89,7 +89,7 @@ abstract class AuthController {
 
   static Future<ApiResponse<LoginModel>> login(
       String email, String password) async {
-    const url = AuthUrl.login;
+    final url = AuthUrl.login;
 
     try {
       final response = await ApiManager.postRequest(

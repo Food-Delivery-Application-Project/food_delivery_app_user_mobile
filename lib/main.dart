@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_delivery_app/blocs/session/session_bloc.dart';
+import 'package:food_delivery_app/constants/app_url.dart';
 import 'package:food_delivery_app/constants/bloc_provider.dart';
 import 'package:food_delivery_app/global/themes/app_theme.dart';
 import 'package:food_delivery_app/utils/secure_storage.dart';
@@ -13,6 +14,7 @@ import 'package:food_delivery_app/view/splash/splash_screen.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 void main() async {
+  await AppUrl.load();
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await initialize();
@@ -34,6 +36,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     UserSecureStorage.fetchUserId().then((value) {
       userId = value;
+      print(userId);
     });
 
     UserSecureStorage.fetchToken().then((value) {

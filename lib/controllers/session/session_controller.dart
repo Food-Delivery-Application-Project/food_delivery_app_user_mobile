@@ -7,7 +7,7 @@ class SessionController {
     required String id,
     required String token,
   }) async {
-    const url = "${AppUrl.baseUrl}/refresh-token";
+    final url = "${AppUrl.baseUrl}/refresh-token";
     final headers = <String, String>{
       "Content-Type": "application/json",
       "authorization": "Bearer $token",

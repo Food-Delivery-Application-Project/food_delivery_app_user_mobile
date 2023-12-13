@@ -33,7 +33,7 @@ class CartController {
     String userId,
     String foodId,
   ) async {
-    const url = "${AppUrl.baseUrl}/add-or-remove-food-item-addtocart";
+    final url = "${AppUrl.baseUrl}/add-or-remove-food-item-addtocart";
     final body = {"userId": userId, "foodId": foodId};
     final response = await ApiManager.postRequest(body, url);
     if (response.statusCode == 200 || response.statusCode == 201) {

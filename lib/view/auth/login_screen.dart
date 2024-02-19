@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
               } else {
                 AppNavigator.goToPage(
                   context: context,
-                  screen: const MainTabsScreen(index: 0),
+                  screen: const MainTabsScreen(),
                 );
               }
             } else if (state is AuthStateFailure) {

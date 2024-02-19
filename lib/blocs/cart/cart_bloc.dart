@@ -7,7 +7,12 @@ import 'package:nb_utils/nb_utils.dart';
 part 'cart_events_states.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
+  List<CartFoodModel> _cartList = [];
   CartBloc() : super(CartInitialState()) {
+    on<CartGetCartListEvent>((event, emit) {
+      emit(CartGetCartListState(cartList: _cartList));
+    });
+
     on<CartGetInitialDataEvent>((event, emit) async {
       emit(CartInitialLoadingState());
       try {
@@ -17,6 +22,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
             page: 1,
             paginatedBy: 50,
           );
+          _cartList = foods.data;
+          add(CartGetCartListEvent());
           if (foods.data.isEmpty) {
             emit(CartEmptyState());
           } else {

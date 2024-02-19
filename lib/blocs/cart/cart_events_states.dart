@@ -6,6 +6,8 @@ abstract class CartEvent {}
 
 class CartGetInitialDataEvent extends CartEvent {}
 
+class CartGetCartListEvent extends CartEvent {}
+
 class CartGetMoreDataEvent extends CartEvent {
   final String userId;
   final int page;
@@ -53,6 +55,11 @@ class CartDecrementQtyEvent extends CartEvent {
 }
 
 abstract class CartState {}
+
+class CartGetCartListState extends CartState {
+  final List<CartFoodModel> cartList;
+  CartGetCartListState({required this.cartList});
+}
 
 class CartInitialState extends CartState {}
 

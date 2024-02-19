@@ -5,6 +5,7 @@ import 'package:food_delivery_app/blocs/category/all_categories_bloc.dart';
 import 'package:food_delivery_app/blocs/food/food_bloc.dart';
 import 'package:food_delivery_app/blocs/image_picker/image_picker_bloc.dart';
 import 'package:food_delivery_app/blocs/timer_cubit/timer_cubit_cubit.dart';
+import 'package:food_delivery_app/blocs/user/user_bloc.dart';
 import 'package:food_delivery_app/blocs/wishlist/wishlist_bloc.dart';
 
 class BlocProviders {
@@ -21,6 +22,9 @@ class BlocProviders {
     ),
     BlocProvider<CartBloc>(
       create: (context) => CartBloc()..add(CartGetInitialDataEvent()),
+    ),
+    BlocProvider<UserBloc>(
+      create: (context) => UserBloc()..add(UserGetDetailsEvent()),
     ),
   ];
 }

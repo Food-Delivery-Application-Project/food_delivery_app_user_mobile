@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context.read<AllCategoriesBloc>().add(GetAllCategoriesEvent());
         context.read<FoodBloc>().add(RandomFoodEvent());
         context.read<WishlistBloc>().add(WishlistGetInitialDataEvent());
+        context.read<StoryBloc>().add(StoryGetAllEvent());
       },
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -189,7 +190,7 @@ class _StoriesWidgetState extends State<StoriesWidget> {
         ),
         const AppDivider(),
       ],
-    );
+    ).visible(stories.isNotEmpty);
   }
 }
 

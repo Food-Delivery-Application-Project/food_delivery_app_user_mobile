@@ -5,6 +5,8 @@ abstract class UserEvent {}
 
 class UserGetDetailsEvent extends UserEvent {}
 
+class UserGetEvent extends UserEvent {}
+
 // States
 abstract class UserState {}
 
@@ -15,6 +17,11 @@ class UserLoadingState extends UserState {}
 class UserGetDataState extends UserState {
   final ApiResponse<UserModel> response;
   UserGetDataState({required this.response});
+}
+
+class UserGetState extends UserState {
+  final UserModel user;
+  UserGetState({required this.user});
 }
 
 class UserErrorState extends UserState {

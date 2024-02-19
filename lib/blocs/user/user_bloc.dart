@@ -7,6 +7,7 @@ import 'package:nb_utils/nb_utils.dart';
 part 'user_events_states.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
+  UserModel? user;
   UserBloc() : super(UserInitState()) {
     on<UserEvent>(
       (event, emit) async {
@@ -16,6 +17,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
             var networkStatus = await isNetworkAvailable();
             if (networkStatus) {
               final response = await UserController.fetchUserDetails();
+              user = response.data;
+              add(UserGetEvent());
               emit(UserGetDataState(response: response));
             } else {
               emit(UserErrorState("No internet connection"));
@@ -23,6 +26,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           } catch (error) {
             emit(UserErrorState(error.toString()));
           }
+        } else if (event is UserGetState) {
+          emit(UserGetState(user: user!));
         }
       },
     );

@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                 bloc: sessionBloc,
                 builder: (context, state) {
                   if (state is SessionHomeState) {
-                    return const MainTabsScreen(index: 0);
+                    return const MainTabsScreen();
                   } else if (state is SessionLoginState) {
                     return const WelcomeScreen();
                   } else if (state is SessionErrorState) {
